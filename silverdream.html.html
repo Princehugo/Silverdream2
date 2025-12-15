@@ -1,0 +1,4649 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Silverdream - Premium Food Packs & Electronics</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      * {
+        font-family: "Inter", sans-serif;
+      }
+
+      /* All previous CSS styles remain the same */
+      .file-upload-area {
+        border: 2px dashed #d1d5db;
+        border-radius: 0.5rem;
+        padding: 2rem;
+        text-align: center;
+        transition: all 0.3s ease;
+        cursor: pointer;
+      }
+      .file-upload-area:hover {
+        border-color: #16a34a;
+        background-color: #f0fdf4;
+      }
+      .file-upload-area.dragover {
+        border-color: #16a34a;
+        background-color: #dcfce7;
+      }
+      .preview-image {
+        max-width: 100%;
+        max-height: 200px;
+        object-fit: contain;
+        margin-top: 1rem;
+        border-radius: 0.375rem;
+      }
+      .section {
+        transition: all 0.3s ease-in-out;
+      }
+      .line-clamp-2 {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+      .password-container {
+        position: relative;
+      }
+      .password-toggle {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: #6b7280;
+      }
+
+      /* Modern Header */
+      .header-gradient {
+        background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+      }
+
+      .nav-link {
+        position: relative;
+        padding: 0.5rem 1rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+      }
+
+      .nav-link::after {
+        content: "";
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: white;
+        transition: width 0.3s ease;
+      }
+
+      .nav-link:hover::after {
+        width: 100%;
+      }
+
+      /* Floating Navigation */
+      .floating-nav {
+        position: fixed;
+        top: 50%;
+        right: 20px;
+        transform: translateY(-50%);
+        z-index: 40;
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(10px);
+        border-radius: 50px;
+        padding: 10px 15px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        transition: all 0.3s ease;
+      }
+
+      .floating-nav.hidden {
+        opacity: 0;
+        transform: translateY(-50%) translateX(100px);
+        pointer-events: none;
+      }
+
+      .floating-nav-btn {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #16a34a;
+        color: white;
+        font-size: 18px;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .floating-nav-btn:hover {
+        transform: scale(1.1);
+        background: #15803d;
+      }
+
+      .floating-nav-btn.active {
+        background: #14532d;
+        transform: scale(1.1);
+      }
+
+      /* Hero Slider */
+      .hero-slider {
+        height: 85vh;
+        min-height: 600px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .slider-content {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        width: 90%;
+        max-width: 1200px;
+        z-index: 10;
+      }
+
+      .hero-title {
+        font-size: clamp(2.5rem, 5vw, 4.5rem);
+        font-weight: 700;
+        line-height: 1.1;
+        margin-bottom: 1.5rem;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+      }
+
+      .hero-subtitle {
+        font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+        font-weight: 400;
+        margin-bottom: 2.5rem;
+        max-width: 700px;
+        margin-left: auto;
+        margin-right: auto;
+        text-shadow: 0 1px 5px rgba(0, 0, 0, 0.3);
+      }
+
+      .hero-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      .btn-primary {
+        background: white;
+        color: #15803d;
+        padding: 0.875rem 2rem;
+        border-radius: 50px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+      }
+
+      .btn-secondary {
+        background: transparent;
+        color: white;
+        border: 2px solid white;
+        padding: 0.875rem 2rem;
+        border-radius: 50px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+
+      .btn-secondary:hover {
+        background: white;
+        color: #15803d;
+      }
+
+      /* Floating shopping bag */
+      .floating-cart {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 100;
+        background: #16a34a;
+        color: white;
+        border-radius: 50%;
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        transition: all 0.3s ease;
+      }
+
+      .floating-cart:hover {
+        transform: scale(1.05);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+      }
+
+      .floating-cart .cart-count {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        background: #ef4444;
+        color: white;
+        border-radius: 50%;
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: bold;
+      }
+
+      /* WhatsApp Button */
+      .whatsapp-btn {
+        position: fixed;
+        bottom: 90px;
+        right: 20px;
+        z-index: 100;
+        background: #25d366;
+        color: white;
+        border-radius: 50%;
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        transition: all 0.3s ease;
+      }
+
+      .whatsapp-btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+      }
+
+      /* Footer admin button */
+      .footer-admin-btn {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        background: rgba(0, 0, 0, 0.3);
+        color: rgba(255, 255, 255, 0.7);
+        border: none;
+        border-radius: 4px;
+        padding: 4px 8px;
+        font-size: 12px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .footer-admin-btn:hover {
+        background: rgba(0, 0, 0, 0.5);
+        color: white;
+      }
+
+      /* Mobile menu improvements */
+      .mobile-menu-item {
+        padding: 12px 16px;
+        border-bottom: 1px solid #e5e7eb;
+      }
+
+      /* Testimonial section */
+      .testimonial-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        padding: 24px;
+        transition: transform 0.3s ease;
+      }
+
+      .testimonial-card:hover {
+        transform: translateY(-5px);
+      }
+
+      .video-container {
+        position: relative;
+        padding-bottom: 56.25%; /* 16:9 aspect ratio */
+        height: 0;
+        overflow: hidden;
+        border-radius: 8px;
+      }
+
+      .video-container iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border: 0;
+      }
+
+      /* Horizontal Product Scrolling */
+      .products-scroll-container {
+        overflow-x: auto;
+        scroll-behavior: smooth;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none; /* Firefox */
+        -ms-overflow-style: none; /* IE and Edge */
+      }
+
+      .products-scroll-container::-webkit-scrollbar {
+        display: none; /* Chrome, Safari, Opera */
+      }
+
+      .products-scroll-wrapper {
+        display: flex;
+        gap: 1.5rem;
+        padding: 1rem 0;
+        width: max-content;
+      }
+
+      .product-card {
+        min-width: 280px;
+        max-width: 280px;
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+      }
+
+      .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      }
+
+      .scroll-controls {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin-top: 1.5rem;
+      }
+
+      .scroll-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #16a34a;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .scroll-btn:hover {
+        background: #15803d;
+        transform: scale(1.1);
+      }
+
+      .scroll-btn:disabled {
+        background: #d1d5db;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      /* Mobile responsive adjustments */
+      @media (max-width: 768px) {
+        .hero-slider {
+          height: 70vh;
+          min-height: 500px;
+        }
+
+        .hero-buttons {
+          flex-direction: column;
+          align-items: center;
+        }
+
+        .btn-primary,
+        .btn-secondary {
+          width: 80%;
+          max-width: 250px;
+        }
+
+        .product-grid {
+          grid-template-columns: 1fr !important;
+        }
+
+        .testimonial-grid {
+          grid-template-columns: 1fr !important;
+        }
+
+        .floating-nav {
+          right: 10px;
+          padding: 8px 12px;
+        }
+
+        .floating-nav-btn {
+          width: 45px;
+          height: 45px;
+          font-size: 16px;
+        }
+
+        .whatsapp-btn {
+          bottom: 85px;
+          right: 10px;
+        }
+
+        .floating-cart {
+          bottom: 20px;
+          right: 10px;
+        }
+      }
+
+      /* Gradient overlay for better text readability */
+      .gradient-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(
+          to bottom,
+          rgba(0, 0, 0, 0.3) 0%,
+          rgba(0, 0, 0, 0.5) 100%
+        );
+        z-index: 1;
+      }
+
+      /* Admin Panel Styles */
+      .admin-panel {
+        max-height: 70vh;
+        overflow-y: auto;
+      }
+
+      .admin-section {
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+      }
+
+      /* Affiliate Dashboard */
+      .affiliate-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+      }
+
+      .stat-card {
+        background: white;
+        border-radius: 8px;
+        padding: 1.5rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        text-align: center;
+      }
+
+      .stat-number {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #16a34a;
+        margin-bottom: 0.5rem;
+      }
+
+      .stat-label {
+        color: #6b7280;
+        font-size: 0.875rem;
+      }
+
+      /* Form Styles */
+      .form-group {
+        margin-bottom: 1.5rem;
+      }
+
+      .form-label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        color: #374151;
+      }
+
+      .form-input {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #d1d5db;
+        border-radius: 0.5rem;
+        transition: all 0.3s ease;
+      }
+
+      .form-input:focus {
+        outline: none;
+        border-color: #16a34a;
+        box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
+      }
+
+      .form-error {
+        color: #ef4444;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+      }
+
+      /* Password Strength Indicator */
+      .password-strength {
+        height: 4px;
+        border-radius: 2px;
+        margin-top: 0.5rem;
+        transition: all 0.3s ease;
+      }
+
+      .password-strength.weak {
+        background-color: #ef4444;
+        width: 25%;
+      }
+
+      .password-strength.fair {
+        background-color: #f59e0b;
+        width: 50%;
+      }
+
+      .password-strength.good {
+        background-color: #10b981;
+        width: 75%;
+      }
+
+      .password-strength.strong {
+        background-color: #16a34a;
+        width: 100%;
+      }
+
+      /* Site Monitoring Dashboard */
+      .monitoring-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+      }
+
+      .monitoring-card {
+        background: white;
+        border-radius: 8px;
+        padding: 1.5rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      }
+
+      .monitoring-value {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #16a34a;
+        margin-bottom: 0.5rem;
+      }
+
+      .monitoring-label {
+        color: #6b7280;
+        font-size: 0.875rem;
+      }
+
+      .status-indicator {
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        margin-right: 0.5rem;
+      }
+
+      .status-online {
+        background-color: #10b981;
+      }
+
+      .status-offline {
+        background-color: #ef4444;
+      }
+
+      .status-warning {
+        background-color: #f59e0b;
+      }
+
+      /* Contact Form Side Panel */
+      .contact-form-panel {
+        position: fixed;
+        top: 0;
+        right: 0;
+        width: 400px;
+        height: 100vh;
+        background: white;
+        box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+        transform: translateX(100%);
+        transition: transform 0.3s ease;
+        overflow-y: auto;
+      }
+
+      .contact-form-panel.open {
+        transform: translateX(0);
+      }
+
+      .contact-form-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+        display: none;
+      }
+
+      .contact-form-overlay.open {
+        display: block;
+      }
+
+      /* Real-time indicator */
+      .real-time-indicator {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background-color: #10b981;
+        margin-right: 5px;
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.5;
+        }
+        100% {
+          opacity: 1;
+        }
+      }
+    </style>
+  </head>
+  <body class="bg-gray-50">
+    <!-- Modern Header -->
+    <header class="header-gradient text-white sticky top-0 z-50 shadow-lg">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-20">
+          <!-- Logo -->
+          <div class="flex items-center">
+            <img
+              id="site-logo"
+              src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjUwIiB2aWV3Qm94PSIwIDAgMjAwIDUwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjUwIiBmaWxsPSJ3aGl0ZSIvPgo8dGV4dCB4PSIxMCIgeT0iMzUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyNCIgZmlsbD0iIzE2QTNBQSI+U2lsdmVyZHJlYW08L3RleHQ+Cjwvc3ZnPgo="
+              alt="Silverdream"
+              class="h-10"
+            />
+          </div>
+
+          <!-- Desktop Navigation - All buttons visible -->
+          <nav class="hidden md:flex space-x-1">
+            <a href="#home" class="nav-link" onclick="showSection('home')"
+              >Home</a
+            >
+            <a
+              href="#products"
+              class="nav-link"
+              onclick="showSection('products')"
+              >Products</a
+            >
+            <a href="#about" class="nav-link" onclick="showSection('home')"
+              >About</a
+            >
+            <a
+              href="#affiliate"
+              class="nav-link"
+              onclick="showSection('affiliate')"
+              >Affiliate</a
+            >
+            <a href="#contact" class="nav-link" onclick="showSection('contact')"
+              >Get Started</a
+            >
+          </nav>
+
+          <!-- Search and Admin -->
+          <div class="flex items-center space-x-4">
+            <!-- Search Bar -->
+            <div class="hidden md:flex items-center">
+              <div class="relative">
+                <input
+                  type="text"
+                  id="search-input"
+                  placeholder="Search..."
+                  class="w-40 pl-10 pr-4 py-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent text-white placeholder-white/70"
+                />
+                <div
+                  class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+                >
+                  <i class="fas fa-search text-white/70"></i>
+                </div>
+                <div
+                  id="search-suggestions"
+                  class="absolute top-full left-0 w-full bg-white border border-gray-300 rounded-lg shadow-lg mt-1 z-50 hidden"
+                >
+                  <!-- Search suggestions will appear here -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Admin Options -->
+            <div class="relative">
+              <button
+                id="admin-options-btn"
+                class="p-2 text-white hover:text-white/80 transition-colors"
+              >
+                <i class="fas fa-cog text-xl"></i>
+              </button>
+              <div
+                id="admin-options-menu"
+                class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 hidden"
+              >
+                <button
+                  onclick="showAdminLogin()"
+                  class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                >
+                  <i class="fas fa-lock mr-2"></i>Admin Login
+                </button>
+                <button
+                  onclick="showAffiliateLogin()"
+                  class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                >
+                  <i class="fas fa-user mr-2"></i>Affiliate Login
+                </button>
+              </div>
+            </div>
+
+            <!-- Mobile Menu Button -->
+            <div class="md:hidden">
+              <button id="mobileMenuBtn" class="text-white text-xl">
+                <i class="fas fa-bars"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mobile Search Bar -->
+      <div class="md:hidden pb-4 px-4">
+        <div class="relative">
+          <input
+            type="text"
+            id="mobile-search-input"
+            placeholder="Search..."
+            class="w-full pl-10 pr-4 py-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent text-white placeholder-white/70"
+          />
+          <div
+            class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+          >
+            <i class="fas fa-search text-white/70"></i>
+          </div>
+          <div
+            id="mobile-search-suggestions"
+            class="absolute top-full left-0 w-full bg-white border border-gray-300 rounded-lg shadow-lg mt-1 z-50 hidden"
+          >
+            <!-- Mobile search suggestions will appear here -->
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Mobile Menu -->
+    <div id="mobileMenu" class="md:hidden bg-white shadow-lg hidden">
+      <div class="px-4 py-2">
+        <a
+          href="#home"
+          class="mobile-menu-item block w-full text-left py-3 text-gray-700 hover:text-green-600 font-medium"
+          onclick="showSection('home'); document.getElementById('mobileMenu').classList.add('hidden')"
+        >
+          Home
+        </a>
+        <a
+          href="#products"
+          class="mobile-menu-item block w-full text-left py-3 text-gray-700 hover:text-green-600 font-medium"
+          onclick="showSection('products'); document.getElementById('mobileMenu').classList.add('hidden')"
+        >
+          Products
+        </a>
+        <a
+          href="#about"
+          class="mobile-menu-item block w-full text-left py-3 text-gray-700 hover:text-green-600 font-medium"
+          onclick="showSection('home'); document.getElementById('mobileMenu').classList.add('hidden')"
+        >
+          About
+        </a>
+        <a
+          href="#affiliate"
+          class="mobile-menu-item block w-full text-left py-3 text-gray-700 hover:text-green-600 font-medium"
+          onclick="showSection('affiliate'); document.getElementById('mobileMenu').classList.add('hidden')"
+        >
+          Affiliate
+        </a>
+        <a
+          href="#contact"
+          class="mobile-menu-item block w-full text-left py-3 text-gray-700 hover:text-green-600 font-medium"
+          onclick="showSection('contact'); document.getElementById('mobileMenu').classList.add('hidden')"
+        >
+          Get Started
+        </a>
+      </div>
+    </div>
+
+    <!-- Floating Navigation -->
+    <div id="floating-nav" class="floating-nav hidden">
+      <button
+        class="floating-nav-btn"
+        onclick="showSection('home')"
+        title="Home"
+      >
+        <i class="fas fa-home"></i>
+      </button>
+      <button
+        class="floating-nav-btn"
+        onclick="showSection('products')"
+        title="Products"
+      >
+        <i class="fas fa-box"></i>
+      </button>
+      <button
+        class="floating-nav-btn"
+        onclick="showSection('affiliate')"
+        title="Affiliate"
+      >
+        <i class="fas fa-users"></i>
+      </button>
+      <button
+        class="floating-nav-btn"
+        onclick="showSection('contact')"
+        title="Contact"
+      >
+        <i class="fas fa-envelope"></i>
+      </button>
+    </div>
+
+    <!-- Floating Shopping Bag -->
+    <button onclick="toggleCart()" class="floating-cart">
+      <i class="fas fa-shopping-bag text-xl"></i>
+      <span id="cart-count-badge" class="cart-count hidden">0</span>
+    </button>
+
+    <!-- WhatsApp Button -->
+    <button onclick="openWhatsApp()" class="whatsapp-btn">
+      <i class="fab fa-whatsapp text-2xl"></i>
+    </button>
+
+    <!-- Main Content -->
+    <main>
+      <!-- Home Section -->
+      <section id="home-section" class="section">
+        <!-- Hero Slider -->
+        <div class="hero-slider">
+          <div id="slider-container" class="relative w-full h-full">
+            <!-- Sliders will be dynamically loaded here -->
+          </div>
+
+          <!-- Slide Controls -->
+          <button
+            id="prev-slide"
+            class="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white rounded-full p-3 transition-all duration-300 z-10 backdrop-blur-sm"
+          >
+            <i class="fas fa-chevron-left"></i>
+          </button>
+          <button
+            id="next-slide"
+            class="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white rounded-full p-3 transition-all duration-300 z-10 backdrop-blur-sm"
+          >
+            <i class="fas fa-chevron-right"></i>
+          </button>
+
+          <!-- Slide Indicators -->
+          <div
+            class="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-2"
+            id="slider-indicators"
+          >
+            <!-- Indicators will be loaded here -->
+          </div>
+        </div>
+
+        <!-- Feedwell Program Caption -->
+        <div
+          class="bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 py-8"
+        >
+          <div class="max-w-7xl mx-auto px-4 text-center">
+            <h1
+              class="text-3xl md:text-4xl font-bold text-white mb-4 drop-shadow-lg"
+            >
+              Buy the Best Food Packs with Convenient Payment Options
+            </h1>
+            <p class="text-xl text-white opacity-90 max-w-3xl mx-auto">
+              Enjoy premium nutrition without financial stress. Our ₦1,000 daily
+              payment plan makes quality food accessible to everyone.
+            </p>
+          </div>
+        </div>
+
+        <!-- Featured Products -->
+        <div class="max-w-7xl mx-auto px-4 py-16">
+          <h2 class="text-3xl font-bold text-gray-900 text-center mb-4">
+            Featured Products
+          </h2>
+          <p class="text-xl text-gray-600 text-center mb-12 max-w-2xl mx-auto">
+            Discover our premium selection of food packs and electronics with
+            flexible payment options
+          </p>
+
+          <!-- Horizontal Scrolling Products -->
+          <div class="products-scroll-container">
+            <div
+              class="products-scroll-wrapper"
+              id="featured-products-container"
+            >
+              <!-- Featured products will be loaded dynamically -->
+            </div>
+          </div>
+
+          <div class="scroll-controls">
+            <button id="scroll-left" class="scroll-btn" disabled>
+              <i class="fas fa-chevron-left"></i>
+            </button>
+            <button id="scroll-right" class="scroll-btn">
+              <i class="fas fa-chevron-right"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- How It Works -->
+        <div class="bg-gray-100 py-16">
+          <div class="max-w-7xl mx-auto px-4">
+            <h2 class="text-3xl font-bold text-gray-900 text-center mb-4">
+              How It Works
+            </h2>
+            <p
+              class="text-xl text-gray-600 text-center mb-12 max-w-2xl mx-auto"
+            >
+              Getting quality products has never been easier with our simple
+              three-step process
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div class="text-center bg-white p-8 rounded-2xl shadow-sm">
+                <div
+                  class="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center text-white text-2xl font-bold mx-auto mb-6"
+                >
+                  1
+                </div>
+                <h3 class="text-2xl font-semibold text-gray-900 mb-4">
+                  Choose Your Pack
+                </h3>
+                <p class="text-gray-600">
+                  Select from Mini, Maxi, or Mega food packs based on your
+                  family's needs and preferences
+                </p>
+              </div>
+              <div class="text-center bg-white p-8 rounded-2xl shadow-sm">
+                <div
+                  class="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center text-white text-2xl font-bold mx-auto mb-6"
+                >
+                  2
+                </div>
+                <h3 class="text-2xl font-semibold text-gray-900 mb-4">
+                  Start Payment Plan
+                </h3>
+                <p class="text-gray-600">
+                  Pay as low as ₦1,000 daily until your pack is fully paid. No
+                  interest, no hidden fees
+                </p>
+              </div>
+              <div class="text-center bg-white p-8 rounded-2xl shadow-sm">
+                <div
+                  class="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center text-white text-2xl font-bold mx-auto mb-6"
+                >
+                  3
+                </div>
+                <h3 class="text-2xl font-semibold text-gray-900 mb-4">
+                  Receive Delivery
+                </h3>
+                <p class="text-gray-600">
+                  Get your food pack delivered fresh to your doorstep after
+                  complete payment
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- About Section on Home Page -->
+        <div id="home-about-section" class="max-w-6xl mx-auto px-4 py-16">
+          <div class="text-center mb-12">
+            <h2 class="text-4xl font-bold text-gray-900 mb-4">
+              About Silverdream
+            </h2>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+              Transforming lives through quality nutrition and innovative
+              technology with flexible payment solutions
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <img
+                id="home-about-image"
+                src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80"
+                alt="About Silverdream"
+                class="w-full h-96 object-cover rounded-2xl shadow-md"
+              />
+            </div>
+            <div>
+              <h3
+                id="home-about-title"
+                class="text-3xl font-bold text-gray-900 mb-6"
+              >
+                Our Story
+              </h3>
+              <p id="home-about-description" class="text-gray-600 mb-4 text-lg">
+                Founded in 2020, Silverdream emerged from a simple vision: to
+                make quality food and essential electronics accessible to
+                everyone through innovative payment solutions.
+              </p>
+              <p class="text-gray-600 mb-6 text-lg">
+                We understand that financial constraints shouldn't prevent
+                people from accessing nutritious food and essential technology.
+                That's why we created our unique ₦1,000 daily payment plan.
+              </p>
+              <div class="grid grid-cols-2 gap-4">
+                <div class="text-center p-4 bg-green-50 rounded-xl">
+                  <div class="text-2xl font-bold text-green-600">10,000+</div>
+                  <div class="text-gray-600">Happy Customers</div>
+                </div>
+                <div class="text-center p-4 bg-green-50 rounded-xl">
+                  <div class="text-2xl font-bold text-green-600">500+</div>
+                  <div class="text-gray-600">Active Affiliates</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Testimonials Section -->
+        <div class="bg-gray-100 py-16">
+          <div class="max-w-7xl mx-auto px-4">
+            <h2 class="text-3xl font-bold text-gray-900 text-center mb-4">
+              What Our Customers Say
+            </h2>
+            <p
+              class="text-xl text-gray-600 text-center mb-12 max-w-3xl mx-auto"
+            >
+              Hear from our satisfied customers about their experience with
+              Silverdream
+            </p>
+
+            <!-- Video Testimonials -->
+            <div class="mb-16">
+              <h3 class="text-2xl font-bold text-gray-900 text-center mb-8">
+                Video Testimonials
+              </h3>
+              <div
+                class="grid grid-cols-1 md:grid-cols-2 gap-8 testimonial-grid"
+                id="video-testimonials-container"
+              >
+                <!-- Video testimonials will be loaded here -->
+              </div>
+            </div>
+
+            <!-- Written Testimonials -->
+            <div>
+              <h3 class="text-2xl font-bold text-gray-900 text-center mb-8">
+                Customer Reviews
+              </h3>
+              <div
+                class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 testimonial-grid"
+                id="written-testimonials-container"
+              >
+                <!-- Written testimonials will be loaded here -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Products Section -->
+      <section id="products-section" class="section hidden">
+        <div class="max-w-7xl mx-auto px-4 py-12">
+          <h2 class="text-3xl font-bold text-gray-900 text-center mb-8">
+            All Products
+          </h2>
+
+          <!-- Category Filters -->
+          <div class="flex flex-wrap justify-center gap-4 mb-8">
+            <button
+              onclick="filterProducts('all')"
+              class="category-filter bg-green-500 text-white px-4 py-2 rounded-lg"
+            >
+              All Products
+            </button>
+            <button
+              onclick="filterProducts('food')"
+              class="category-filter bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-green-500 hover:text-white transition-colors"
+            >
+              Food Packs
+            </button>
+            <button
+              onclick="filterProducts('electronics')"
+              class="category-filter bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-green-500 hover:text-white transition-colors"
+            >
+              Electronics
+            </button>
+          </div>
+
+          <!-- Horizontal Scrolling Products -->
+          <div class="products-scroll-container">
+            <div class="products-scroll-wrapper" id="products-container">
+              <!-- Products will be loaded here -->
+            </div>
+          </div>
+
+          <div class="scroll-controls">
+            <button id="products-scroll-left" class="scroll-btn" disabled>
+              <i class="fas fa-chevron-left"></i>
+            </button>
+            <button id="products-scroll-right" class="scroll-btn">
+              <i class="fas fa-chevron-right"></i>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Affiliate Section -->
+      <section id="affiliate-section" class="section hidden">
+        <div class="max-w-7xl mx-auto px-4 py-12">
+          <div class="text-center mb-12">
+            <h2 class="text-4xl font-bold text-gray-900 mb-4">
+              Silverdream Affiliate Program
+            </h2>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+              Earn commissions by referring customers to Silverdream. Join our
+              growing network of affiliates today!
+            </p>
+          </div>
+
+          <!-- Affiliate Login/Register Tabs -->
+          <div
+            class="max-w-md mx-auto bg-white rounded-2xl shadow-md mb-12 overflow-hidden"
+          >
+            <div class="flex border-b">
+              <button
+                id="login-tab"
+                class="flex-1 py-4 font-medium text-center bg-green-500 text-white"
+              >
+                Login
+              </button>
+              <button
+                id="register-tab"
+                class="flex-1 py-4 font-medium text-center bg-gray-100 text-gray-700"
+              >
+                Register
+              </button>
+            </div>
+
+            <!-- Affiliate Login Form -->
+            <div id="affiliate-login-form" class="p-8">
+              <h3 class="text-2xl font-bold text-gray-900 mb-6 text-center">
+                Affiliate Login
+              </h3>
+              <div class="space-y-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1"
+                    >Email</label
+                  >
+                  <input
+                    type="email"
+                    id="affiliate-email"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                    placeholder="Enter your email"
+                  />
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1"
+                    >Password</label
+                  >
+                  <div class="password-container">
+                    <input
+                      type="password"
+                      id="affiliate-password"
+                      class="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                      placeholder="Enter your password"
+                    />
+                    <button
+                      type="button"
+                      class="password-toggle"
+                      onclick="togglePasswordVisibility('affiliate-password', 'affiliate-password-toggle')"
+                    >
+                      <i class="fas fa-eye" id="affiliate-password-toggle"></i>
+                    </button>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <button
+                    onclick="showPasswordReset()"
+                    class="text-sm text-green-500 hover:underline"
+                  >
+                    Forgot Password?
+                  </button>
+                </div>
+                <button
+                  onclick="affiliateLogin()"
+                  class="w-full bg-green-500 hover:bg-green-600 text-white py-3 rounded-md font-semibold transition-colors"
+                >
+                  Login
+                </button>
+              </div>
+            </div>
+
+            <!-- Affiliate Registration Form -->
+            <div id="affiliate-register-form" class="p-8 hidden">
+              <h3 class="text-2xl font-bold text-gray-900 mb-6 text-center">
+                Affiliate Registration
+              </h3>
+              <form id="register-form">
+                <div class="space-y-4">
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1"
+                      >Full Name</label
+                    >
+                    <input
+                      type="text"
+                      id="register-name"
+                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                      placeholder="Enter your full name"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1"
+                      >Email</label
+                    >
+                    <input
+                      type="email"
+                      id="register-email"
+                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                      placeholder="Enter your email"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1"
+                      >Phone Number</label
+                    >
+                    <input
+                      type="tel"
+                      id="register-phone"
+                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                      placeholder="Enter your phone number"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1"
+                      >Password</label
+                    >
+                    <div class="password-container">
+                      <input
+                        type="password"
+                        id="register-password"
+                        class="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                        placeholder="Create a password"
+                        required
+                      />
+                      <button
+                        type="button"
+                        class="password-toggle"
+                        onclick="togglePasswordVisibility('register-password', 'register-password-toggle')"
+                      >
+                        <i class="fas fa-eye" id="register-password-toggle"></i>
+                      </button>
+                    </div>
+                    <div id="password-strength" class="password-strength"></div>
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1"
+                      >Confirm Password</label
+                    >
+                    <div class="password-container">
+                      <input
+                        type="password"
+                        id="register-confirm-password"
+                        class="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                        placeholder="Confirm your password"
+                        required
+                      />
+                      <button
+                        type="button"
+                        class="password-toggle"
+                        onclick="togglePasswordVisibility('register-confirm-password', 'register-confirm-password-toggle')"
+                      >
+                        <i
+                          class="fas fa-eye"
+                          id="register-confirm-password-toggle"
+                        ></i>
+                      </button>
+                    </div>
+                    <div id="password-match" class="form-error hidden">
+                      Passwords do not match
+                    </div>
+                  </div>
+                  <div class="flex items-center">
+                    <input
+                      type="checkbox"
+                      id="register-terms"
+                      class="mr-2"
+                      required
+                    />
+                    <label for="register-terms" class="text-sm text-gray-700">
+                      I agree to the
+                      <a href="#" class="text-green-500 hover:underline"
+                        >Terms and Conditions</a
+                      >
+                    </label>
+                  </div>
+                  <button
+                    type="submit"
+                    class="w-full bg-green-500 hover:bg-green-600 text-white py-3 rounded-md font-semibold transition-colors"
+                  >
+                    Register
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- Affiliate Dashboard (Hidden by default) -->
+          <div id="affiliate-dashboard" class="hidden">
+            <div class="affiliate-stats">
+              <div class="stat-card">
+                <div class="stat-number" id="total-referrals">0</div>
+                <div class="stat-label">Total Referrals</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-number" id="active-referrals">0</div>
+                <div class="stat-label">Active Referrals</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-number">
+                  ₦<span id="total-commission">0</span>
+                </div>
+                <div class="stat-label">Total Commission</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-number">
+                  ₦<span id="pending-commission">0</span>
+                </div>
+                <div class="stat-label">Pending Commission</div>
+              </div>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-md p-6 mb-8">
+              <h3 class="text-2xl font-bold text-gray-900 mb-4">
+                Your Affiliate Link
+              </h3>
+              <div class="flex">
+                <input
+                  type="text"
+                  id="affiliate-link"
+                  class="flex-1 px-3 py-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                  readonly
+                />
+                <button
+                  onclick="copyAffiliateLink()"
+                  class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-r-md transition-colors"
+                >
+                  Copy
+                </button>
+              </div>
+              <button
+                onclick="shareViaWhatsApp()"
+                class="w-full mt-4 bg-green-500 hover:bg-green-600 text-white py-3 rounded-md font-semibold transition-colors flex items-center justify-center"
+              >
+                <i class="fab fa-whatsapp mr-2"></i>
+                Share via WhatsApp
+              </button>
+              <button
+                onclick="openContactFormPanel()"
+                class="w-full mt-4 bg-blue-500 hover:bg-blue-600 text-white py-3 rounded-md font-semibold transition-colors flex items-center justify-center"
+              >
+                <i class="fas fa-share-alt mr-2"></i>
+                Share Contact Form
+              </button>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-md p-6">
+              <h3 class="text-2xl font-bold text-gray-900 mb-4">
+                Your Referrals
+              </h3>
+              <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left text-gray-500">
+                  <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                    <tr>
+                      <th scope="col" class="px-6 py-3">Name</th>
+                      <th scope="col" class="px-6 py-3">Phone</th>
+                      <th scope="col" class="px-6 py-3">Status</th>
+                      <th scope="col" class="px-6 py-3">Commission</th>
+                    </tr>
+                  </thead>
+                  <tbody id="referrals-table-body">
+                    <!-- Referrals will be loaded here -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Contact Section -->
+      <section id="contact-section" class="section hidden">
+        <div class="max-w-2xl mx-auto px-4 py-12">
+          <h2 class="text-3xl font-bold text-gray-900 text-center mb-8">
+            Complete Your Order
+          </h2>
+          <form
+            id="contact-form"
+            class="bg-white p-8 rounded-lg shadow-md border border-gray-200"
+          >
+            <!-- Order Summary Section -->
+            <div
+              class="mb-6 p-4 bg-green-50 rounded-lg border border-green-200"
+            >
+              <h3
+                class="text-lg font-semibold text-gray-900 mb-3 flex items-center"
+              >
+                <i class="fas fa-shopping-cart mr-2 text-green-600"></i>
+                Order Summary
+              </h3>
+              <div id="checkout-products" class="space-y-2 mb-3">
+                <!-- Cart products will be displayed here -->
+              </div>
+              <div
+                class="flex justify-between items-center pt-3 border-t border-green-200 font-semibold"
+              >
+                <span class="text-gray-900">Total Amount:</span>
+                <span id="checkout-total" class="text-xl text-green-600"
+                  >₦0</span
+                >
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2"
+                  >Full Name *</label
+                >
+                <input
+                  type="text"
+                  id="customer-name"
+                  required
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                  placeholder="John Doe"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2"
+                  >Phone Number *</label
+                >
+                <input
+                  type="tel"
+                  id="customer-phone"
+                  required
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                  placeholder="08012345678"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2"
+                  >Email (Optional)</label
+                >
+                <input
+                  type="email"
+                  id="customer-email"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                  placeholder="john@example.com"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2"
+                  >State of Residence *</label
+                >
+                <select
+                  id="customer-state"
+                  required
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                >
+                  <option value="">Select State</option>
+                  <option value="Lagos">Lagos</option>
+                  <option value="Abuja">Abuja</option>
+                  <option value="Rivers">Rivers</option>
+                  <option value="Kano">Kano</option>
+                  <option value="Oyo">Oyo</option>
+                  <option value="Edo">Edo</option>
+                  <option value="Delta">Delta</option>
+                  <option value="Kaduna">Kaduna</option>
+                  <option value="Ogun">Ogun</option>
+                  <option value="Enugu">Enugu</option>
+                  <option value="Anambra">Anambra</option>
+                  <option value="Plateau">Plateau</option>
+                  <option value="Imo">Imo</option>
+                  <option value="Bauchi">Bauchi</option>
+                  <option value="Akwa Ibom">Akwa Ibom</option>
+                  <option value="Cross River">Cross River</option>
+                  <option value="Benue">Benue</option>
+                  <option value="Borno">Borno</option>
+                  <option value="Niger">Niger</option>
+                  <option value="Katsina">Katsina</option>
+                  <option value="Sokoto">Sokoto</option>
+                  <option value="Zamfara">Zamfara</option>
+                  <option value="Kebbi">Kebbi</option>
+                  <option value="Jigawa">Jigawa</option>
+                  <option value="Yobe">Yobe</option>
+                  <option value="Gombe">Gombe</option>
+                  <option value="Taraba">Taraba</option>
+                  <option value="Adamawa">Adamawa</option>
+                  <option value="Kwara">Kwara</option>
+                  <option value="Nasarawa">Nasarawa</option>
+                  <option value="Bayelsa">Bayelsa</option>
+                  <option value="Ebonyi">Ebonyi</option>
+                  <option value="Ekiti">Ekiti</option>
+                  <option value="Osun">Osun</option>
+                  <option value="Abia">Abia</option>
+                  <option value="Ondo">Ondo</option>
+                </select>
+              </div>
+              <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-gray-700 mb-2"
+                  >Delivery Address *</label
+                >
+                <textarea
+                  id="customer-address"
+                  required
+                  rows="3"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                  placeholder="Enter your complete address including street, city, and landmarks"
+                ></textarea>
+              </div>
+              <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-gray-700 mb-2"
+                  >Who referred you? (Optional)</label
+                >
+                <input
+                  type="text"
+                  id="referrer"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                  placeholder="Affiliate name or code"
+                />
+              </div>
+            </div>
+            <button
+              type="button"
+              onclick="submitCheckoutForm()"
+              class="w-full mt-6 bg-green-500 hover:bg-green-600 text-white py-3 px-4 rounded-md font-semibold transition-colors flex items-center justify-center"
+            >
+              <i class="fab fa-whatsapp mr-2"></i>
+              Complete Order via WhatsApp
+            </button>
+          </form>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white pt-12 pb-8 relative">
+      <div class="max-w-7xl mx-auto px-4">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+          <!-- Company Info -->
+          <div>
+            <h3 class="text-xl font-bold mb-4">Silverdream</h3>
+            <p class="text-gray-400 mb-4">
+              Making quality food and electronics accessible through innovative
+              payment solutions.
+            </p>
+            <div class="flex space-x-4">
+              <a
+                href="#"
+                class="text-gray-400 hover:text-white transition-colors"
+              >
+                <i class="fab fa-facebook text-xl"></i>
+              </a>
+              <a
+                href="#"
+                class="text-gray-400 hover:text-white transition-colors"
+              >
+                <i class="fab fa-twitter text-xl"></i>
+              </a>
+              <a
+                href="#"
+                class="text-gray-400 hover:text-white transition-colors"
+              >
+                <i class="fab fa-instagram text-xl"></i>
+              </a>
+              <a
+                href="#"
+                class="text-gray-400 hover:text-white transition-colors"
+              >
+                <i class="fab fa-linkedin text-xl"></i>
+              </a>
+            </div>
+          </div>
+
+          <!-- Contact Info -->
+          <div>
+            <h3 class="text-lg font-semibold mb-4">Contact Info</h3>
+            <div class="space-y-2 text-gray-400">
+              <div class="flex items-center">
+                <i class="fas fa-map-marker-alt mr-3"></i>
+                <span
+                  ><em>5th Avenue G1 close suite 5 Festac Town Lagos</em></span
+                >
+              </div>
+              <div class="flex items-center">
+                <i class="fas fa-phone mr-3"></i>
+                <span>+234 801 234 5678</span>
+              </div>
+              <div class="flex items-center">
+                <i class="fas fa-envelope mr-3"></i>
+                <span>info@silverdream.com</span>
+              </div>
+              <div class="flex items-center">
+                <i class="fab fa-whatsapp mr-3"></i>
+                <span>+234 812 345 6789</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Links -->
+          <div>
+            <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
+            <ul class="space-y-2 text-gray-400">
+              <li>
+                <a
+                  href="#home"
+                  class="hover:text-white transition-colors"
+                  onclick="showSection('home')"
+                >
+                  Home
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#products"
+                  class="hover:text-white transition-colors"
+                  onclick="showSection('products')"
+                >
+                  Products
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#about"
+                  class="hover:text-white transition-colors"
+                  onclick="showSection('home')"
+                >
+                  About Us
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#affiliate"
+                  class="hover:text-white transition-colors"
+                  onclick="showSection('affiliate')"
+                >
+                  Affiliate Program
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#contact"
+                  class="hover:text-white transition-colors"
+                  onclick="showSection('contact')"
+                >
+                  Get Started
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Business Hours -->
+          <div>
+            <h3 class="text-lg font-semibold mb-4">Business Hours</h3>
+            <div class="space-y-2 text-gray-400">
+              <div class="flex justify-between">
+                <span>Monday - Friday:</span>
+                <span>8:00 AM - 6:00 PM</span>
+              </div>
+              <div class="flex justify-between">
+                <span>Saturday:</span>
+                <span>9:00 AM - 4:00 PM</span>
+              </div>
+              <div class="flex justify-between">
+                <span>Sunday:</span>
+                <span>Closed</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="border-t border-gray-800 pt-8 text-center text-gray-400">
+          <p>
+            &copy; 2024 Silverdream. All rights reserved. | Designed by Megasev
+            <i class="fas fa-heart text-red-500"></i> for Nigeria
+          </p>
+        </div>
+      </div>
+
+      <!-- Admin Button in Footer -->
+      <button onclick="showAdminLogin()" class="footer-admin-btn">
+        <i class="fas fa-cog"></i> Admin
+      </button>
+    </footer>
+
+    <!-- Admin Login Modal -->
+    <div
+      id="admin-login-modal"
+      class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4"
+    >
+      <div class="bg-white rounded-lg shadow-xl w-full max-w-md">
+        <div class="p-6">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="text-xl font-bold text-gray-900">Admin Login</h3>
+            <button
+              onclick="closeAdminLogin()"
+              class="text-gray-500 hover:text-gray-700"
+            >
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+
+          <form id="admin-login-form">
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1"
+                  >Username</label
+                >
+                <input
+                  type="text"
+                  id="admin-username"
+                  required
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                  placeholder="Enter username"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1"
+                  >Password</label
+                >
+                <div class="password-container">
+                  <input
+                    type="password"
+                    id="admin-password"
+                    required
+                    class="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                    placeholder="Enter password"
+                  />
+                  <button
+                    type="button"
+                    class="password-toggle"
+                    onclick="togglePasswordVisibility('admin-password', 'admin-password-toggle')"
+                  >
+                    <i class="fas fa-eye" id="admin-password-toggle"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-6 flex space-x-3">
+              <button
+                type="button"
+                onclick="closeAdminLogin()"
+                class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-800 py-2 px-4 rounded-md font-medium transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onclick="submitAdminLogin()"
+                class="flex-1 bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-md font-semibold transition-colors flex items-center justify-center"
+              >
+                <i class="fas fa-sign-in-alt mr-2"></i>
+                Login
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Admin Panel Modal -->
+    <div
+      id="admin-panel-modal"
+      class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4"
+    >
+      <div
+        class="bg-white rounded-lg shadow-xl w-full max-w-6xl max-h-[90vh] overflow-y-auto admin-panel"
+      >
+        <div class="p-6">
+          <div class="flex justify-between items-center mb-6">
+            <h3 class="text-xl font-bold text-gray-900">Admin Panel</h3>
+            <button
+              onclick="closeAdminPanel()"
+              class="text-gray-500 hover:text-gray-700"
+            >
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Logo Management -->
+            <div class="admin-section">
+              <h4 class="text-lg font-semibold text-gray-900 mb-3">
+                Logo Management
+              </h4>
+              <div class="mb-4">
+                <div id="current-logo" class="mb-3 p-3 bg-white rounded border">
+                  <p class="text-sm text-gray-600 mb-2">Current Logo:</p>
+                  <img
+                    id="logo-preview"
+                    src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjUwIiB2aWV3Qm94PSIwIDAgMjAwIDUwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjUwIiBmaWxsPSIjMTZBMzRBIi8+Cjx0ZXh0IHg9IjEwIiB5PSIzNSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjI0IiBmaWxsPSJ3aGl0ZSI+U2lsdmVyZHJlYW08L3RleHQ+Cjwvc3ZnPgo="
+                    alt="Current Logo"
+                    class="h-12"
+                  />
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-3"
+                    >Upload New Logo</label
+                  >
+                  <div
+                    class="file-upload-area"
+                    onclick="document.getElementById('logo-upload').click()"
+                  >
+                    <i
+                      class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"
+                    ></i>
+                    <p class="text-sm text-gray-600">
+                      Click to upload or drag and drop
+                    </p>
+                    <p class="text-xs text-gray-500 mt-1">
+                      PNG, JPG, SVG up to 5MB
+                    </p>
+                    <input
+                      type="file"
+                      id="logo-upload"
+                      accept="image/*"
+                      class="hidden"
+                      onchange="previewLogo(this)"
+                    />
+                  </div>
+                  <div id="logo-preview-container" class="mt-3 hidden">
+                    <p class="text-sm font-medium text-gray-700 mb-2">
+                      Preview:
+                    </p>
+                    <img id="new-logo-preview" class="preview-image" />
+                  </div>
+                </div>
+              </div>
+              <button
+                onclick="updateLogo()"
+                class="w-full bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-md font-medium transition-colors"
+              >
+                Update Logo
+              </button>
+            </div>
+
+            <!-- Slider Management -->
+            <div class="admin-section">
+              <h4 class="text-lg font-semibold text-gray-900 mb-3">
+                Header Slider Management
+              </h4>
+              <div
+                id="current-sliders"
+                class="space-y-3 mb-4 max-h-60 overflow-y-auto p-2 bg-white rounded border"
+              >
+                <!-- Current sliders will be loaded here -->
+              </div>
+              <button
+                onclick="showAddSliderModal()"
+                class="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md font-medium transition-colors"
+              >
+                Add New Slider
+              </button>
+            </div>
+
+            <!-- Product Management -->
+            <div class="admin-section md:col-span-2">
+              <h4 class="text-lg font-semibold text-gray-900 mb-3">
+                Product Management
+              </h4>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <button
+                  onclick="showAddProductModal()"
+                  class="bg-green-500 hover:bg-green-600 text-white py-3 px-4 rounded-md font-medium transition-colors flex items-center justify-center"
+                >
+                  <i class="fas fa-plus mr-2"></i>
+                  Add New Product
+                </button>
+                <button
+                  onclick="showProductManager()"
+                  class="bg-blue-500 hover:bg-blue-600 text-white py-3 px-4 rounded-md font-medium transition-colors flex items-center justify-center"
+                >
+                  <i class="fas fa-boxes mr-2"></i>
+                  Manage Products
+                </button>
+              </div>
+            </div>
+
+            <!-- Video Testimonials Management -->
+            <div class="admin-section md:col-span-2">
+              <h4 class="text-lg font-semibold text-gray-900 mb-3">
+                Video Testimonials Management
+              </h4>
+              <div
+                id="current-videos"
+                class="space-y-3 mb-4 max-h-60 overflow-y-auto p-2 bg-white rounded border"
+              >
+                <!-- Current videos will be loaded here -->
+              </div>
+              <button
+                onclick="showAddVideoModal()"
+                class="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md font-medium transition-colors"
+              >
+                Add New Video
+              </button>
+            </div>
+
+            <!-- Site Monitoring -->
+            <div class="admin-section md:col-span-2">
+              <h4 class="text-lg font-semibold text-gray-900 mb-3">
+                <span class="real-time-indicator"></span>
+                Real-time Site Monitoring
+              </h4>
+              <div class="monitoring-grid" id="real-time-monitoring">
+                <!-- Real-time monitoring data will be loaded here -->
+              </div>
+              <div class="bg-white p-4 rounded-lg border border-gray-200">
+                <h5 class="font-semibold text-gray-900 mb-3">System Status</h5>
+                <div class="space-y-2">
+                  <div class="flex items-center">
+                    <span class="status-indicator status-online"></span>
+                    <span>Website: Online</span>
+                  </div>
+                  <div class="flex items-center">
+                    <span class="status-indicator status-online"></span>
+                    <span>Database: Online</span>
+                  </div>
+                  <div class="flex items-center">
+                    <span class="status-indicator status-online"></span>
+                    <span>Payment Gateway: Online</span>
+                  </div>
+                  <div class="flex items-center">
+                    <span class="status-indicator status-online"></span>
+                    <span>Email Service: Online</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Affiliate Management -->
+            <div class="admin-section md:col-span-2">
+              <h4 class="text-lg font-semibold text-gray-900 mb-3">
+                Affiliate Management
+              </h4>
+              <div
+                id="current-affiliates"
+                class="space-y-3 mb-4 max-h-60 overflow-y-auto p-2 bg-white rounded border"
+              >
+                <!-- Current affiliates will be loaded here -->
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <button
+                  onclick="showAddAffiliateModal()"
+                  class="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-md font-medium transition-colors flex items-center justify-center"
+                >
+                  <i class="fas fa-plus mr-2"></i>
+                  Add Affiliate
+                </button>
+                <button
+                  onclick="exportAffiliateData()"
+                  class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md font-medium transition-colors flex items-center justify-center"
+                >
+                  <i class="fas fa-download mr-2"></i>
+                  Export Data
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Shopping Cart Sidebar -->
+    <div
+      id="cart-sidebar"
+      class="fixed top-0 right-0 h-full w-96 bg-white shadow-2xl z-50 transform translate-x-full transition-transform duration-300"
+    >
+      <div class="p-6 h-full flex flex-col">
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-2xl font-bold text-gray-900">Your Shopping Bag</h2>
+          <button
+            onclick="toggleCart()"
+            class="text-gray-500 hover:text-gray-700"
+          >
+            <i class="fas fa-times text-xl"></i>
+          </button>
+        </div>
+
+        <div id="cart-content" class="flex-1 overflow-y-auto">
+          <!-- Cart items will be loaded here -->
+        </div>
+
+        <div class="border-t border-gray-200 pt-4">
+          <div class="flex justify-between items-center mb-2">
+            <span class="text-lg font-semibold text-gray-900">Items:</span>
+            <span id="cart-item-count" class="text-xl font-bold text-gray-700"
+              >0</span
+            >
+          </div>
+          <div class="flex justify-between items-center mb-4">
+            <span class="text-lg font-semibold text-gray-900">Total:</span>
+            <span id="cart-total" class="text-2xl font-bold text-green-600"
+              >₦0</span
+            >
+          </div>
+          <button
+            onclick="proceedToCheckout()"
+            class="w-full bg-green-500 hover:bg-green-600 text-white py-3 rounded-lg font-semibold transition-colors flex items-center justify-center"
+          >
+            <i class="fas fa-credit-card mr-2"></i>
+            Proceed to Checkout
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cart Overlay -->
+    <div
+      id="cart-overlay"
+      class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden"
+      onclick="toggleCart()"
+    ></div>
+
+    <!-- Password Reset Modal -->
+    <div
+      id="password-reset-modal"
+      class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4"
+    >
+      <div class="bg-white rounded-lg shadow-xl w-full max-w-md">
+        <div class="p-6">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="text-xl font-bold text-gray-900">Reset Password</h3>
+            <button
+              onclick="closePasswordReset()"
+              class="text-gray-500 hover:text-gray-700"
+            >
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+          <form id="password-reset-form">
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1"
+                  >Email</label
+                >
+                <input
+                  type="email"
+                  id="reset-email"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                  placeholder="Enter your email"
+                  required
+                />
+              </div>
+              <button
+                type="submit"
+                class="w-full bg-green-500 hover:bg-green-600 text-white py-3 rounded-md font-semibold transition-colors"
+              >
+                Send Reset Link
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contact Form Side Panel -->
+    <div id="contact-form-panel" class="contact-form-panel">
+      <div class="p-6 h-full flex flex-col">
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-2xl font-bold text-gray-900">
+            Customer Contact Form
+          </h2>
+          <button
+            onclick="closeContactFormPanel()"
+            class="text-gray-500 hover:text-gray-700"
+          >
+            <i class="fas fa-times text-xl"></i>
+          </button>
+        </div>
+
+        <div class="flex-1 overflow-y-auto">
+          <form id="affiliate-contact-form">
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1"
+                  >Customer Name *</label
+                >
+                <input
+                  type="text"
+                  id="contact-name"
+                  required
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                  placeholder="Enter customer name"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1"
+                  >Customer Phone *</label
+                >
+                <input
+                  type="tel"
+                  id="contact-phone"
+                  required
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                  placeholder="Enter customer phone"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1"
+                  >Customer Email</label
+                >
+                <input
+                  type="email"
+                  id="contact-email"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                  placeholder="Enter customer email"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1"
+                  >Product Interest</label
+                >
+                <select
+                  id="contact-product"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                >
+                  <option value="">Select Product</option>
+                  <option value="Mini Pack">Mini Pack</option>
+                  <option value="Maxi Pack">Maxi Pack</option>
+                  <option value="Mega Pack">Mega Pack</option>
+                  <option value="Smartphone X1">Smartphone X1</option>
+                  <option value="Laptop Pro">Laptop Pro</option>
+                  <option value="Wireless Earbuds">Wireless Earbuds</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1"
+                  >Message</label
+                >
+                <textarea
+                  id="contact-message"
+                  rows="4"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                  placeholder="Enter any additional message"
+                ></textarea>
+              </div>
+            </div>
+            <button
+              type="button"
+              onclick="submitContactForm()"
+              class="w-full mt-6 bg-green-500 hover:bg-green-600 text-white py-3 rounded-md font-semibold transition-colors"
+            >
+              Submit Contact Form
+            </button>
+          </form>
+
+          <div class="mt-8">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">
+              Share Contact Form
+            </h3>
+            <div class="flex">
+              <input
+                type="text"
+                id="contact-form-link"
+                class="flex-1 px-3 py-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                readonly
+              />
+              <button
+                onclick="copyContactFormLink()"
+                class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-r-md transition-colors"
+              >
+                Copy
+              </button>
+            </div>
+            <button
+              onclick="shareContactFormViaWhatsApp()"
+              class="w-full mt-4 bg-green-500 hover:bg-green-600 text-white py-3 rounded-md font-semibold transition-colors flex items-center justify-center"
+            >
+              <i class="fab fa-whatsapp mr-2"></i>
+              Share via WhatsApp
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      id="contact-form-overlay"
+      class="contact-form-overlay"
+      onclick="closeContactFormPanel()"
+    ></div>
+
+    <!-- Add Video Modal -->
+    <div
+      id="add-video-modal"
+      class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4"
+    >
+      <div class="bg-white rounded-lg shadow-xl w-full max-w-md">
+        <div class="p-6">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="text-xl font-bold text-gray-900">
+              Add Video Testimonial
+            </h3>
+            <button
+              onclick="closeAddVideoModal()"
+              class="text-gray-500 hover:text-gray-700"
+            >
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+          <form id="add-video-form">
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1"
+                  >Video Title</label
+                >
+                <input
+                  type="text"
+                  id="video-title"
+                  required
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                  placeholder="Enter video title"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1"
+                  >Customer Name</label
+                >
+                <input
+                  type="text"
+                  id="video-customer-name"
+                  required
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                  placeholder="Enter customer name"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1"
+                  >Video URL</label
+                >
+                <input
+                  type="url"
+                  id="video-url"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                  placeholder="Enter YouTube or Vimeo URL"
+                />
+              </div>
+              <div class="text-center text-gray-500">OR</div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-3"
+                  >Upload Video File</label
+                >
+                <div
+                  class="file-upload-area"
+                  onclick="document.getElementById('video-upload').click()"
+                >
+                  <i
+                    class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"
+                  ></i>
+                  <p class="text-sm text-gray-600">
+                    Click to upload or drag and drop
+                  </p>
+                  <p class="text-xs text-gray-500 mt-1">MP4, MOV up to 100MB</p>
+                  <input
+                    type="file"
+                    id="video-upload"
+                    accept="video/*"
+                    class="hidden"
+                  />
+                </div>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1"
+                  >Testimonial Text</label
+                >
+                <textarea
+                  id="video-testimonial"
+                  rows="3"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                  placeholder="Enter testimonial text"
+                ></textarea>
+              </div>
+            </div>
+            <div class="mt-6 flex space-x-3">
+              <button
+                type="button"
+                onclick="closeAddVideoModal()"
+                class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-800 py-2 px-4 rounded-md font-medium transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onclick="submitVideoForm()"
+                class="flex-1 bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-md font-semibold transition-colors"
+              >
+                Add Video
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- React Components Container -->
+    <div id="react-components"></div>
+
+    <script type="text/babel">
+      // React Components for enhanced functionality
+
+      // Real-time Monitoring Component
+      const RealTimeMonitoring = () => {
+        const [monitoringData, setMonitoringData] = React.useState({
+          visitors: 0,
+          activeUsers: 0,
+          revenue: 0,
+          orders: 0,
+        });
+
+        React.useEffect(() => {
+          // Simulate real-time data updates
+          const interval = setInterval(() => {
+            setMonitoringData((prev) => ({
+              visitors: Math.floor(Math.random() * 100) + prev.visitors,
+              activeUsers: Math.floor(Math.random() * 10) + 5,
+              revenue: prev.revenue + Math.floor(Math.random() * 10000),
+              orders: prev.orders + Math.floor(Math.random() * 5),
+            }));
+          }, 3000);
+
+          return () => clearInterval(interval);
+        }, []);
+
+        return (
+          <div className="monitoring-grid">
+            <div className="monitoring-card">
+              <div className="monitoring-value">{monitoringData.visitors}</div>
+              <div className="monitoring-label">Total Visitors Today</div>
+            </div>
+            <div className="monitoring-card">
+              <div className="monitoring-value">
+                {monitoringData.activeUsers}
+              </div>
+              <div className="monitoring-label">Active Users Now</div>
+            </div>
+            <div className="monitoring-card">
+              <div className="monitoring-value">
+                ₦{monitoringData.revenue.toLocaleString()}
+              </div>
+              <div className="monitoring-label">Today's Revenue</div>
+            </div>
+            <div className="monitoring-card">
+              <div className="monitoring-value">{monitoringData.orders}</div>
+              <div className="monitoring-label">New Orders</div>
+            </div>
+          </div>
+        );
+      };
+
+      // Video Management Component
+      const VideoManagement = () => {
+        const [videos, setVideos] = React.useState([]);
+
+        React.useEffect(() => {
+          // Load videos from state
+          setVideos(
+            window.state.testimonials.filter((t) => t.type === "video")
+          );
+        }, []);
+
+        const handleDeleteVideo = (id) => {
+          if (confirm("Are you sure you want to delete this video?")) {
+            setVideos((prev) => prev.filter((video) => video.id !== id));
+            // Update global state
+            window.state.testimonials = window.state.testimonials.filter(
+              (t) => t.id !== id
+            );
+            showNotification("Video deleted successfully");
+          }
+        };
+
+        return (
+          <div
+            id="current-videos"
+            className="space-y-3 mb-4 max-h-60 overflow-y-auto p-2 bg-white rounded border"
+          >
+            {videos.length === 0 ? (
+              <div className="text-center py-4 text-gray-500">
+                <i className="fas fa-video text-3xl mb-2"></i>
+                <p>No video testimonials added yet</p>
+              </div>
+            ) : (
+              videos.map((video) => (
+                <div
+                  key={video.id}
+                  className="bg-white p-3 rounded border border-gray-200"
+                >
+                  <div className="flex justify-between items-start">
+                    <div className="flex-1">
+                      <div className="flex items-center mb-2">
+                        {video.photo ? (
+                          <img
+                            src={video.photo}
+                            alt={video.name}
+                            className="w-10 h-10 object-cover rounded-full mr-3"
+                          />
+                        ) : (
+                          <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center mr-3">
+                            <i className="fas fa-user text-gray-500"></i>
+                          </div>
+                        )}
+                        <div>
+                          <h5 className="font-semibold text-gray-900">
+                            {video.name}
+                          </h5>
+                          <p className="text-sm text-gray-500 line-clamp-2">
+                            {video.text}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center text-xs text-gray-500">
+                        <span className="px-2 py-1 rounded bg-blue-100 text-blue-800">
+                          Video Testimonial
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex space-x-2 ml-3">
+                      <button
+                        onClick={() => handleDeleteVideo(video.id)}
+                        className="text-red-500 hover:text-red-700 p-1"
+                      >
+                        <i className="fas fa-trash"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        );
+      };
+
+      // Render React Components
+      const renderReactComponents = () => {
+        const container = document.getElementById("react-components");
+
+        // Render Real-time Monitoring when admin panel is open
+        const adminPanel = document.getElementById("admin-panel-modal");
+        if (adminPanel && !adminPanel.classList.contains("hidden")) {
+          const monitoringContainer = document.getElementById(
+            "real-time-monitoring"
+          );
+          if (monitoringContainer) {
+            ReactDOM.render(<RealTimeMonitoring />, monitoringContainer);
+          }
+
+          const videosContainer = document.getElementById("current-videos");
+          if (videosContainer) {
+            ReactDOM.render(<VideoManagement />, videosContainer);
+          }
+        }
+      };
+
+      // Initialize React components when DOM is loaded
+      document.addEventListener("DOMContentLoaded", () => {
+        // Re-render React components when admin panel is opened
+        const observer = new MutationObserver(() => {
+          renderReactComponents();
+        });
+
+        observer.observe(document.getElementById("admin-panel-modal"), {
+          attributes: true,
+          attributeFilter: ["class"],
+        });
+      });
+    </script>
+
+    <script>
+      // Application State
+      let state = {
+        currentSection: "home",
+        cart: [],
+        products: [
+          {
+            id: 1,
+            name: "Mini Pack",
+            price: 25000,
+            cost: 20000,
+            description: "Perfect for individuals - weekly essentials",
+            category: "food",
+            image:
+              "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80",
+          },
+          {
+            id: 2,
+            name: "Maxi Pack",
+            price: 50000,
+            cost: 40000,
+            description: "Great for couples - balanced nutrition",
+            category: "food",
+            image:
+              "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80",
+          },
+          {
+            id: 3,
+            name: "Mega Pack",
+            price: 80000,
+            cost: 65000,
+            description: "Family package - complete monthly supply",
+            category: "food",
+            image:
+              "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80",
+          },
+          {
+            id: 4,
+            name: "Smartphone X1",
+            price: 120000,
+            cost: 100000,
+            description: "Latest smartphone with premium features",
+            category: "electronics",
+            image:
+              "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80",
+          },
+          {
+            id: 5,
+            name: "Laptop Pro",
+            price: 300000,
+            cost: 250000,
+            description: "High-performance laptop for work and play",
+            category: "electronics",
+            image:
+              "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80",
+          },
+          {
+            id: 6,
+            name: "Wireless Earbuds",
+            price: 25000,
+            cost: 20000,
+            description: "Crystal clear sound, comfortable fit",
+            category: "electronics",
+            image:
+              "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80",
+          },
+        ],
+        sliders: [
+          {
+            id: 1,
+            title: "Premium Food Packs & Electronics",
+            description:
+              "Quality nutrition and cutting-edge gadgets delivered to your doorstep with flexible payment plans",
+            buttonText: "Shop Now",
+            buttonAction: "products",
+            bgColor: "from-green-500 to-green-700",
+            image:
+              "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80",
+            active: true,
+          },
+          {
+            id: 2,
+            title: "Flexible Payment Plans",
+            description:
+              "Pay ₦1,000 daily for your favorite products. No interest, no hidden fees",
+            buttonText: "Learn More",
+            buttonAction: "contact",
+            bgColor: "from-blue-500 to-blue-700",
+            image:
+              "https://images.unsplash.com/photo-1554224155-6726b3ff858f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80",
+            active: true,
+          },
+        ],
+        testimonials: [
+          {
+            id: 1,
+            name: "Sarah Johnson",
+            text: "The Feedwell program has been a lifesaver for my family. We can now afford quality food without financial stress.",
+            video: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+            photo:
+              "https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80",
+            type: "video",
+          },
+          {
+            id: 2,
+            name: "Michael Adebayo",
+            text: "I got my first smartphone through Silverdream's payment plan. The process was smooth and the product quality is excellent.",
+            video: "",
+            photo:
+              "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80",
+            type: "written",
+          },
+          {
+            id: 3,
+            name: "Grace Okon",
+            text: "The Mega Pack has been perfect for my family of four. We get all our monthly supplies without breaking the bank.",
+            video: "",
+            photo:
+              "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80",
+            type: "written",
+          },
+          {
+            id: 4,
+            name: "David Chukwu",
+            text: "As an affiliate, I've earned extra income while helping others access quality products. Silverdream changed my life!",
+            video: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+            photo:
+              "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80",
+            type: "video",
+          },
+        ],
+        affiliates: [
+          {
+            id: 1,
+            name: "John Adebayo",
+            email: "john@example.com",
+            phone: "08012345678",
+            password: "password123",
+            referrals: 15,
+            activeReferrals: 8,
+            totalCommission: 45000,
+            pendingCommission: 12000,
+            joinDate: "2023-05-15",
+            customers: [
+              {
+                id: 1,
+                name: "James Smith",
+                phone: "08011111111",
+                status: "Active",
+                commission: 5000,
+              },
+              {
+                id: 2,
+                name: "Maria Garcia",
+                phone: "08022222222",
+                status: "Pending",
+                commission: 0,
+              },
+            ],
+          },
+          {
+            id: 2,
+            name: "Mary Johnson",
+            email: "mary@example.com",
+            phone: "08087654321",
+            password: "password123",
+            referrals: 22,
+            activeReferrals: 14,
+            totalCommission: 68000,
+            pendingCommission: 18000,
+            joinDate: "2023-03-10",
+            customers: [
+              {
+                id: 3,
+                name: "Robert Johnson",
+                phone: "08033333333",
+                status: "Active",
+                commission: 7000,
+              },
+            ],
+          },
+        ],
+        currentAffiliate: null,
+        currentSlide: 0,
+        slideInterval: null,
+        cartOpen: false,
+        isAdmin: false,
+      };
+
+      // Make state globally available for React components
+      window.state = state;
+
+      // Initialize the application
+      document.addEventListener("DOMContentLoaded", function () {
+        initializeApp();
+      });
+
+      function initializeApp() {
+        // Load sliders
+        loadSliders();
+
+        // Start slideshow
+        startSlideshow();
+
+        // Load products
+        loadProducts();
+
+        // Load testimonials
+        loadTestimonials();
+
+        // Load cart from localStorage
+        loadCartFromStorage();
+
+        // Update cart display
+        updateCartDisplay();
+
+        // Setup mobile menu
+        setupMobileMenu();
+
+        // Setup search functionality
+        setupSearch();
+
+        // Setup admin options
+        setupAdminOptions();
+
+        // Setup slider controls
+        setupSliderControls();
+
+        // Setup floating navigation
+        setupFloatingNav();
+
+        // Setup affiliate forms
+        setupAffiliateForms();
+
+        // Setup product scrolling
+        setupProductScrolling();
+
+        // Load current affiliates for admin
+        loadCurrentAffiliates();
+
+        // Set up navigation links
+        setupNavigationLinks();
+
+        // Check for affiliate parameter in URL
+        checkAffiliateParameter();
+
+        // Load affiliates from localStorage
+        loadAffiliatesFromStorage();
+      }
+
+      // Check for affiliate parameter in URL
+      function checkAffiliateParameter() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const affiliateId = urlParams.get("affiliate");
+
+        if (affiliateId) {
+          // Store affiliate ID in localStorage for tracking
+          localStorage.setItem("referringAffiliate", affiliateId);
+
+          // Pre-fill the referrer field in the contact form
+          const affiliate = state.affiliates.find((a) => a.id == affiliateId);
+          if (affiliate) {
+            // Set a flag to pre-fill the referrer field when contact form is shown
+            state.referringAffiliate = affiliate;
+          }
+        }
+      }
+
+      // Floating Navigation Functions
+      function setupFloatingNav() {
+        // Show floating nav after scrolling down a bit
+        window.addEventListener("scroll", function () {
+          const floatingNav = document.getElementById("floating-nav");
+          if (window.scrollY > 300) {
+            floatingNav.classList.remove("hidden");
+          } else {
+            floatingNav.classList.add("hidden");
+          }
+        });
+
+        // Update active button in floating nav
+        const floatingNavButtons =
+          document.querySelectorAll(".floating-nav-btn");
+        floatingNavButtons.forEach((button) => {
+          button.addEventListener("click", function () {
+            floatingNavButtons.forEach((btn) => btn.classList.remove("active"));
+            this.classList.add("active");
+          });
+        });
+      }
+
+      // Product Scrolling Functions
+      function setupProductScrolling() {
+        const featuredContainer = document.getElementById(
+          "featured-products-container"
+        );
+        const productsContainer = document.getElementById("products-container");
+        const scrollLeftBtn = document.getElementById("scroll-left");
+        const scrollRightBtn = document.getElementById("scroll-right");
+        const productsScrollLeftBtn = document.getElementById(
+          "products-scroll-left"
+        );
+        const productsScrollRightBtn = document.getElementById(
+          "products-scroll-right"
+        );
+
+        // Featured products scrolling
+        if (featuredContainer) {
+          scrollLeftBtn.addEventListener("click", function () {
+            featuredContainer.scrollBy({ left: -300, behavior: "smooth" });
+          });
+
+          scrollRightBtn.addEventListener("click", function () {
+            featuredContainer.scrollBy({ left: 300, behavior: "smooth" });
+          });
+
+          featuredContainer.addEventListener("scroll", function () {
+            updateScrollButtons(
+              featuredContainer,
+              scrollLeftBtn,
+              scrollRightBtn
+            );
+          });
+        }
+
+        // All products scrolling
+        if (productsContainer) {
+          productsScrollLeftBtn.addEventListener("click", function () {
+            productsContainer.scrollBy({ left: -300, behavior: "smooth" });
+          });
+
+          productsScrollRightBtn.addEventListener("click", function () {
+            productsContainer.scrollBy({ left: 300, behavior: "smooth" });
+          });
+
+          productsContainer.addEventListener("scroll", function () {
+            updateScrollButtons(
+              productsContainer,
+              productsScrollLeftBtn,
+              productsScrollRightBtn
+            );
+          });
+        }
+      }
+
+      function updateScrollButtons(container, leftBtn, rightBtn) {
+        // Check if at the beginning
+        if (container.scrollLeft <= 10) {
+          leftBtn.disabled = true;
+        } else {
+          leftBtn.disabled = false;
+        }
+
+        // Check if at the end
+        if (
+          container.scrollLeft >=
+          container.scrollWidth - container.clientWidth - 10
+        ) {
+          rightBtn.disabled = true;
+        } else {
+          rightBtn.disabled = false;
+        }
+      }
+
+      // Affiliate Form Functions
+      function setupAffiliateForms() {
+        // Tab switching
+        const loginTab = document.getElementById("login-tab");
+        const registerTab = document.getElementById("register-tab");
+        const loginForm = document.getElementById("affiliate-login-form");
+        const registerForm = document.getElementById("affiliate-register-form");
+
+        loginTab.addEventListener("click", function () {
+          loginTab.classList.add("bg-green-500", "text-white");
+          loginTab.classList.remove("bg-gray-100", "text-gray-700");
+          registerTab.classList.remove("bg-green-500", "text-white");
+          registerTab.classList.add("bg-gray-100", "text-gray-700");
+          loginForm.classList.remove("hidden");
+          registerForm.classList.add("hidden");
+        });
+
+        registerTab.addEventListener("click", function () {
+          registerTab.classList.add("bg-green-500", "text-white");
+          registerTab.classList.remove("bg-gray-100", "text-gray-700");
+          loginTab.classList.remove("bg-green-500", "text-white");
+          loginTab.classList.add("bg-gray-100", "text-gray-700");
+          registerForm.classList.remove("hidden");
+          loginForm.classList.add("hidden");
+        });
+
+        // Password strength indicator
+        const passwordInput = document.getElementById("register-password");
+        const passwordStrength = document.getElementById("password-strength");
+        const confirmPasswordInput = document.getElementById(
+          "register-confirm-password"
+        );
+        const passwordMatch = document.getElementById("password-match");
+
+        if (passwordInput) {
+          passwordInput.addEventListener("input", function () {
+            const password = this.value;
+            const strength = checkPasswordStrength(password);
+
+            // Reset classes
+            passwordStrength.className = "password-strength";
+
+            // Add appropriate class based on strength
+            if (password.length > 0) {
+              passwordStrength.classList.add(strength);
+            }
+          });
+        }
+
+        if (confirmPasswordInput) {
+          confirmPasswordInput.addEventListener("input", function () {
+            const password = passwordInput.value;
+            const confirmPassword = this.value;
+
+            if (confirmPassword.length > 0 && password !== confirmPassword) {
+              passwordMatch.classList.remove("hidden");
+            } else {
+              passwordMatch.classList.add("hidden");
+            }
+          });
+        }
+
+        // Registration form submission
+        const registerFormElement = document.getElementById("register-form");
+        if (registerFormElement) {
+          registerFormElement.addEventListener("submit", function (e) {
+            e.preventDefault();
+            affiliateRegister();
+          });
+        }
+
+        // Password reset form submission
+        const passwordResetForm = document.getElementById(
+          "password-reset-form"
+        );
+        if (passwordResetForm) {
+          passwordResetForm.addEventListener("submit", function (e) {
+            e.preventDefault();
+            submitPasswordReset();
+          });
+        }
+      }
+
+      function checkPasswordStrength(password) {
+        let strength = 0;
+
+        // Length check
+        if (password.length >= 8) strength++;
+
+        // Contains lowercase
+        if (/[a-z]/.test(password)) strength++;
+
+        // Contains uppercase
+        if (/[A-Z]/.test(password)) strength++;
+
+        // Contains numbers
+        if (/[0-9]/.test(password)) strength++;
+
+        // Contains special characters
+        if (/[^A-Za-z0-9]/.test(password)) strength++;
+
+        // Determine strength level
+        if (strength <= 2) return "weak";
+        if (strength === 3) return "fair";
+        if (strength === 4) return "good";
+        return "strong";
+      }
+
+      function affiliateRegister() {
+        const name = document.getElementById("register-name").value;
+        const email = document.getElementById("register-email").value;
+        const phone = document.getElementById("register-phone").value;
+        const password = document.getElementById("register-password").value;
+        const confirmPassword = document.getElementById(
+          "register-confirm-password"
+        ).value;
+        const terms = document.getElementById("register-terms").checked;
+
+        // Validation
+        if (!name || !email || !phone || !password || !confirmPassword) {
+          alert("Please fill in all required fields");
+          return;
+        }
+
+        if (password !== confirmPassword) {
+          alert("Passwords do not match");
+          return;
+        }
+
+        if (!terms) {
+          alert("Please agree to the terms and conditions");
+          return;
+        }
+
+        // Check if email already exists
+        const existingAffiliate = state.affiliates.find(
+          (a) => a.email === email
+        );
+        if (existingAffiliate) {
+          alert(
+            "An account with this email already exists. Please login instead."
+          );
+          return;
+        }
+
+        // Create new affiliate
+        const newAffiliate = {
+          id: state.affiliates.length + 1,
+          name: name,
+          email: email,
+          phone: phone,
+          password: password,
+          referrals: 0,
+          activeReferrals: 0,
+          totalCommission: 0,
+          pendingCommission: 0,
+          joinDate: new Date().toISOString().split("T")[0],
+          customers: [],
+        };
+
+        state.affiliates.push(newAffiliate);
+
+        // Save to localStorage
+        saveAffiliatesToStorage();
+
+        showNotification(
+          "Affiliate registration successful! You can now login."
+        );
+
+        // Reset form
+        document.getElementById("register-form").reset();
+        document.getElementById("password-strength").className =
+          "password-strength";
+        document.getElementById("password-match").classList.add("hidden");
+
+        // Switch to login tab
+        document.getElementById("login-tab").click();
+      }
+
+      function affiliateLogin() {
+        const email = document.getElementById("affiliate-email").value;
+        const password = document.getElementById("affiliate-password").value;
+
+        // Accept any password for registered affiliates
+        const affiliate = state.affiliates.find((a) => a.email === email);
+
+        if (affiliate) {
+          // Accept any password for demo purposes
+          state.currentAffiliate = affiliate;
+          document
+            .getElementById("affiliate-login-form")
+            .classList.add("hidden");
+          document
+            .getElementById("affiliate-dashboard")
+            .classList.remove("hidden");
+          updateAffiliateDashboard();
+          showNotification("Affiliate login successful!");
+        } else {
+          alert("No account found with this email. Please register first.");
+        }
+      }
+
+      function updateAffiliateDashboard() {
+        if (!state.currentAffiliate) return;
+
+        document.getElementById("total-referrals").textContent =
+          state.currentAffiliate.referrals;
+        document.getElementById("active-referrals").textContent =
+          state.currentAffiliate.activeReferrals;
+        document.getElementById("total-commission").textContent =
+          state.currentAffiliate.totalCommission.toLocaleString();
+        document.getElementById("pending-commission").textContent =
+          state.currentAffiliate.pendingCommission.toLocaleString();
+
+        // Generate affiliate link
+        const affiliateLink = `${window.location.origin}${window.location.pathname}?affiliate=${state.currentAffiliate.id}`;
+        document.getElementById("affiliate-link").value = affiliateLink;
+
+        // Generate contact form link
+        const contactFormLink = `${window.location.origin}${window.location.pathname}?affiliate=${state.currentAffiliate.id}&contactform=true`;
+        document.getElementById("contact-form-link").value = contactFormLink;
+
+        // Load referrals table
+        loadReferralsTable();
+      }
+
+      function copyAffiliateLink() {
+        const affiliateLink = document.getElementById("affiliate-link");
+        affiliateLink.select();
+        affiliateLink.setSelectionRange(0, 99999); // For mobile devices
+        document.execCommand("copy");
+        showNotification("Affiliate link copied to clipboard!");
+      }
+
+      function shareViaWhatsApp() {
+        const affiliateLink = document.getElementById("affiliate-link").value;
+        const message = `Check out Silverdream - Premium Food Packs & Electronics with flexible payment plans! Use my affiliate link: ${affiliateLink}`;
+        const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(
+          message
+        )}`;
+        window.open(whatsappUrl, "_blank");
+      }
+
+      function openContactFormPanel() {
+        document.getElementById("contact-form-panel").classList.add("open");
+        document.getElementById("contact-form-overlay").classList.add("open");
+      }
+
+      function closeContactFormPanel() {
+        document.getElementById("contact-form-panel").classList.remove("open");
+        document
+          .getElementById("contact-form-overlay")
+          .classList.remove("open");
+      }
+
+      function copyContactFormLink() {
+        const contactFormLink = document.getElementById("contact-form-link");
+        contactFormLink.select();
+        contactFormLink.setSelectionRange(0, 99999);
+        document.execCommand("copy");
+        showNotification("Contact form link copied to clipboard!");
+      }
+
+      function shareContactFormViaWhatsApp() {
+        const contactFormLink =
+          document.getElementById("contact-form-link").value;
+        const message = `Interested in Silverdream products? Fill out this contact form and I'll help you get started: ${contactFormLink}`;
+        const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(
+          message
+        )}`;
+        window.open(whatsappUrl, "_blank");
+      }
+
+      function submitContactForm() {
+        const name = document.getElementById("contact-name").value;
+        const phone = document.getElementById("contact-phone").value;
+        const email = document.getElementById("contact-email").value;
+        const product = document.getElementById("contact-product").value;
+        const message = document.getElementById("contact-message").value;
+
+        if (!name || !phone) {
+          alert("Please fill in at least name and phone number");
+          return;
+        }
+
+        if (!state.currentAffiliate) {
+          alert(
+            "You must be logged in as an affiliate to submit contact forms"
+          );
+          return;
+        }
+
+        // Add customer to affiliate's customer list
+        const newCustomer = {
+          id: state.currentAffiliate.customers.length + 1,
+          name: name,
+          phone: phone,
+          email: email,
+          product: product,
+          message: message,
+          status: "New",
+          commission: 0,
+          date: new Date().toISOString().split("T")[0],
+        };
+
+        state.currentAffiliate.customers.push(newCustomer);
+        state.currentAffiliate.referrals += 1;
+
+        // Save to localStorage
+        saveAffiliatesToStorage();
+
+        // Update dashboard
+        updateAffiliateDashboard();
+
+        // Close the panel
+        closeContactFormPanel();
+
+        // Reset form
+        document.getElementById("affiliate-contact-form").reset();
+
+        showNotification(
+          "Contact form submitted successfully! Customer added to your referrals."
+        );
+      }
+
+      function loadReferralsTable() {
+        const tbody = document.getElementById("referrals-table-body");
+        tbody.innerHTML = "";
+
+        if (
+          !state.currentAffiliate ||
+          !state.currentAffiliate.customers ||
+          state.currentAffiliate.customers.length === 0
+        ) {
+          tbody.innerHTML = `
+                    <tr>
+                        <td colspan="4" class="px-6 py-4 text-center text-gray-500">
+                            No referrals yet. Share your affiliate link to start earning commissions!
+                        </td>
+                    </tr>
+                `;
+          return;
+        }
+
+        state.currentAffiliate.customers.forEach((customer) => {
+          const row = document.createElement("tr");
+          row.className = "bg-white border-b hover:bg-gray-50";
+          row.innerHTML = `
+                  <td class="px-6 py-4 font-medium text-gray-900">${
+                    customer.name
+                  }</td>
+                  <td class="px-6 py-4">${customer.phone}</td>
+                  <td class="px-6 py-4">
+                    <span class="px-2 py-1 text-xs font-medium rounded-full ${
+                      customer.status === "Active"
+                        ? "bg-green-100 text-green-800"
+                        : customer.status === "Pending"
+                        ? "bg-yellow-100 text-yellow-800"
+                        : "bg-blue-100 text-blue-800"
+                    }">
+                      ${customer.status}
+                    </span>
+                  </td>
+                  <td class="px-6 py-4">₦${customer.commission.toLocaleString()}</td>
+                `;
+          tbody.appendChild(row);
+        });
+      }
+
+      function showPasswordReset() {
+        document
+          .getElementById("password-reset-modal")
+          .classList.remove("hidden");
+      }
+
+      function closePasswordReset() {
+        document.getElementById("password-reset-modal").classList.add("hidden");
+      }
+
+      function submitPasswordReset() {
+        const email = document.getElementById("reset-email").value;
+
+        if (!email) {
+          alert("Please enter your email address");
+          return;
+        }
+
+        // Check if email exists
+        const affiliate = state.affiliates.find((a) => a.email === email);
+        if (!affiliate) {
+          alert("No account found with this email address");
+          return;
+        }
+
+        // In a real application, you would send a reset request to a server
+        // For demo purposes, we'll just show a success message
+        showNotification("Password reset link has been sent to your email");
+        closePasswordReset();
+      }
+
+      // Password Visibility Toggle
+      function togglePasswordVisibility(passwordFieldId, toggleIconId) {
+        const passwordInput = document.getElementById(passwordFieldId);
+        const toggleIcon = document.getElementById(toggleIconId);
+
+        if (passwordInput.type === "password") {
+          passwordInput.type = "text";
+          toggleIcon.classList.remove("fa-eye");
+          toggleIcon.classList.add("fa-eye-slash");
+        } else {
+          passwordInput.type = "password";
+          toggleIcon.classList.remove("fa-eye-slash");
+          toggleIcon.classList.add("fa-eye");
+        }
+      }
+
+      // Save affiliates to localStorage
+      function saveAffiliatesToStorage() {
+        localStorage.setItem(
+          "silverdream_affiliates",
+          JSON.stringify(state.affiliates)
+        );
+      }
+
+      // Load affiliates from localStorage
+      function loadAffiliatesFromStorage() {
+        const savedAffiliates = localStorage.getItem("silverdream_affiliates");
+        if (savedAffiliates) {
+          state.affiliates = JSON.parse(savedAffiliates);
+        }
+      }
+
+      // Video Management Functions
+      function showAddVideoModal() {
+        document.getElementById("add-video-modal").classList.remove("hidden");
+      }
+
+      function closeAddVideoModal() {
+        document.getElementById("add-video-modal").classList.add("hidden");
+      }
+
+      function submitVideoForm() {
+        const title = document.getElementById("video-title").value;
+        const customerName = document.getElementById(
+          "video-customer-name"
+        ).value;
+        const videoUrl = document.getElementById("video-url").value;
+        const testimonial = document.getElementById("video-testimonial").value;
+
+        if (!title || !customerName) {
+          alert("Please fill in at least title and customer name");
+          return;
+        }
+
+        // Create new video testimonial
+        const newVideo = {
+          id: state.testimonials.length + 1,
+          name: customerName,
+          text: testimonial || "Video testimonial",
+          video: videoUrl || "https://www.youtube.com/embed/dQw4w9WgXcQ", // Default video
+          photo:
+            "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80",
+          type: "video",
+        };
+
+        state.testimonials.push(newVideo);
+
+        // Reload testimonials
+        loadTestimonials();
+
+        // Close modal
+        closeAddVideoModal();
+
+        // Reset form
+        document.getElementById("add-video-form").reset();
+
+        showNotification("Video testimonial added successfully!");
+      }
+
+      // The rest of the functions remain the same as in the previous implementation
+      // (Navigation, Slider, Product Display, Cart, Admin, etc.)
+
+      // Navigation Functions
+      function setupNavigationLinks() {
+        // Desktop navigation links
+        const navLinks = document.querySelectorAll(".nav-link");
+        navLinks.forEach((link) => {
+          link.addEventListener("click", function (e) {
+            e.preventDefault();
+            const section = this.getAttribute("href").substring(1);
+            showSection(section);
+          });
+        });
+
+        // Footer navigation links
+        const footerLinks = document.querySelectorAll("footer a");
+        footerLinks.forEach((link) => {
+          link.addEventListener("click", function (e) {
+            e.preventDefault();
+            const section = this.getAttribute("href").substring(1);
+            showSection(section);
+          });
+        });
+      }
+
+      function showSection(sectionName) {
+        // Hide all sections
+        document.querySelectorAll(".section").forEach((section) => {
+          section.classList.add("hidden");
+        });
+
+        // Show selected section
+        document
+          .getElementById(`${sectionName}-section`)
+          .classList.remove("hidden");
+
+        // Update active state
+        state.currentSection = sectionName;
+
+        // Close mobile menu if open
+        document.getElementById("mobileMenu").classList.add("hidden");
+
+        // Scroll to top of the page
+        window.scrollTo(0, 0);
+
+        // If showing contact section, update checkout summary and pre-fill referrer if applicable
+        if (sectionName === "contact") {
+          updateCheckoutSummary();
+
+          // Pre-fill referrer field if there's a referring affiliate
+          if (state.referringAffiliate) {
+            document.getElementById("referrer").value =
+              state.referringAffiliate.name;
+          }
+
+          // Check if we should show the contact form directly
+          const urlParams = new URLSearchParams(window.location.search);
+          if (
+            urlParams.get("contactform") === "true" &&
+            urlParams.get("affiliate")
+          ) {
+            // Auto-open contact form panel if accessed via affiliate link
+            setTimeout(() => {
+              openContactFormPanel();
+            }, 500);
+          }
+        }
+
+        // Update floating nav active button
+        const floatingNavButtons =
+          document.querySelectorAll(".floating-nav-btn");
+        floatingNavButtons.forEach((button) => {
+          button.classList.remove("active");
+
+          // Set active based on section
+          if (sectionName === "home" && button.querySelector(".fa-home")) {
+            button.classList.add("active");
+          } else if (
+            sectionName === "products" &&
+            button.querySelector(".fa-box")
+          ) {
+            button.classList.add("active");
+          } else if (
+            sectionName === "affiliate" &&
+            button.querySelector(".fa-users")
+          ) {
+            button.classList.add("active");
+          } else if (
+            sectionName === "contact" &&
+            button.querySelector(".fa-envelope")
+          ) {
+            button.classList.add("active");
+          }
+        });
+      }
+
+      // Slider Functions
+      function loadSliders() {
+        const sliderContainer = document.getElementById("slider-container");
+        const indicatorsContainer =
+          document.getElementById("slider-indicators");
+
+        sliderContainer.innerHTML = "";
+        indicatorsContainer.innerHTML = "";
+
+        const activeSliders = state.sliders.filter((slider) => slider.active);
+
+        if (activeSliders.length === 0) {
+          // Default slider if no active sliders
+          sliderContainer.innerHTML = `
+                            <div class="absolute inset-0 transition-opacity duration-1000 opacity-100">
+                                <div class="w-full h-full bg-gradient-to-r from-green-500 to-green-700 flex items-center justify-center relative overflow-hidden">
+                                    <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80" alt="Premium Food Packs" class="w-full h-full object-cover">
+                                    <div class="gradient-overlay"></div>
+                                    <div class="slider-content">
+                                        <h1 class="hero-title text-white">Premium Food Packs & Electronics</h1>
+                                        <p class="hero-subtitle text-white">Quality nutrition and cutting-edge gadgets delivered to your doorstep with flexible payment plans</p>
+                                        <div class="hero-buttons">
+                                            <button onclick="showSection('products')" class="btn-primary">
+                                                Shop Now
+                                            </button>
+                                            <button onclick="showSection('contact')" class="btn-secondary">
+                                                Learn More
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+          indicatorsContainer.innerHTML =
+            '<button class="w-3 h-3 rounded-full bg-white slide-indicator transition-all duration-300"></button>';
+          return;
+        }
+
+        activeSliders.forEach((slider, index) => {
+          // Create slide
+          const slide = document.createElement("div");
+          slide.className = `absolute inset-0 transition-opacity duration-1000 ${
+            index === 0 ? "opacity-100" : "opacity-0"
+          }`;
+          slide.innerHTML = `
+                            <div class="w-full h-full bg-gradient-to-r ${slider.bgColor} flex items-center justify-center relative overflow-hidden">
+                                <img src="${slider.image}" alt="${slider.title}" class="w-full h-full object-cover">
+                                <div class="gradient-overlay"></div>
+                                <div class="slider-content">
+                                    <h1 class="hero-title text-white">${slider.title}</h1>
+                                    <p class="hero-subtitle text-white">${slider.description}</p>
+                                    <div class="hero-buttons">
+                                        <button onclick="showSection('${slider.buttonAction}')" class="btn-primary">
+                                            ${slider.buttonText}
+                                        </button>
+                                        <button onclick="showSection('contact')" class="btn-secondary">
+                                            Get Started
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+          sliderContainer.appendChild(slide);
+
+          // Create indicator
+          const indicator = document.createElement("button");
+          indicator.className = `w-3 h-3 rounded-full ${
+            index === 0 ? "bg-white" : "bg-white/50"
+          } slide-indicator transition-all duration-300`;
+          indicator.onclick = () => goToSlide(index);
+          indicatorsContainer.appendChild(indicator);
+        });
+      }
+
+      function startSlideshow() {
+        if (state.slideInterval) {
+          clearInterval(state.slideInterval);
+        }
+
+        const activeSliders = state.sliders.filter((slider) => slider.active);
+        if (activeSliders.length > 1) {
+          state.slideInterval = setInterval(() => {
+            nextSlide();
+          }, 5000);
+        }
+      }
+
+      function nextSlide() {
+        const slides = document.querySelectorAll("#slider-container > div");
+        const indicators = document.querySelectorAll(".slide-indicator");
+
+        if (slides.length <= 1) return;
+
+        slides[state.currentSlide].classList.remove("opacity-100");
+        slides[state.currentSlide].classList.add("opacity-0");
+        indicators[state.currentSlide].classList.remove("bg-white");
+        indicators[state.currentSlide].classList.add("bg-white/50");
+
+        state.currentSlide = (state.currentSlide + 1) % slides.length;
+
+        slides[state.currentSlide].classList.remove("opacity-0");
+        slides[state.currentSlide].classList.add("opacity-100");
+        indicators[state.currentSlide].classList.remove("bg-white/50");
+        indicators[state.currentSlide].classList.add("bg-white");
+      }
+
+      function prevSlide() {
+        const slides = document.querySelectorAll("#slider-container > div");
+        const indicators = document.querySelectorAll(".slide-indicator");
+
+        if (slides.length <= 1) return;
+
+        slides[state.currentSlide].classList.remove("opacity-100");
+        slides[state.currentSlide].classList.add("opacity-0");
+        indicators[state.currentSlide].classList.remove("bg-white");
+        indicators[state.currentSlide].classList.add("bg-white/50");
+
+        state.currentSlide =
+          (state.currentSlide - 1 + slides.length) % slides.length;
+
+        slides[state.currentSlide].classList.remove("opacity-0");
+        slides[state.currentSlide].classList.add("opacity-100");
+        indicators[state.currentSlide].classList.remove("bg-white/50");
+        indicators[state.currentSlide].classList.add("bg-white");
+      }
+
+      function goToSlide(index) {
+        const slides = document.querySelectorAll("#slider-container > div");
+        const indicators = document.querySelectorAll(".slide-indicator");
+
+        if (slides.length <= 1 || index === state.currentSlide) return;
+
+        slides[state.currentSlide].classList.remove("opacity-100");
+        slides[state.currentSlide].classList.add("opacity-0");
+        indicators[state.currentSlide].classList.remove("bg-white");
+        indicators[state.currentSlide].classList.add("bg-white/50");
+
+        state.currentSlide = index;
+
+        slides[state.currentSlide].classList.remove("opacity-0");
+        slides[state.currentSlide].classList.add("opacity-100");
+        indicators[state.currentSlide].classList.remove("bg-white/50");
+        indicators[state.currentSlide].classList.add("bg-white");
+
+        // Reset slideshow timer
+        startSlideshow();
+      }
+
+      function setupSliderControls() {
+        document
+          .getElementById("prev-slide")
+          .addEventListener("click", prevSlide);
+        document
+          .getElementById("next-slide")
+          .addEventListener("click", nextSlide);
+      }
+
+      // Product Display Functions
+      function loadProducts() {
+        const featuredContainer = document.getElementById(
+          "featured-products-container"
+        );
+        const productsContainer = document.getElementById("products-container");
+
+        featuredContainer.innerHTML = "";
+        productsContainer.innerHTML = "";
+
+        // Load featured products (first 3)
+        state.products.slice(0, 3).forEach((product) => {
+          const productElement = createProductElement(product);
+          featuredContainer.appendChild(productElement);
+        });
+
+        // Load all products
+        state.products.forEach((product) => {
+          const productElement = createProductElement(product);
+          productsContainer.appendChild(productElement);
+        });
+
+        // Initialize scroll buttons
+        setTimeout(() => {
+          if (featuredContainer) {
+            updateScrollButtons(
+              featuredContainer,
+              document.getElementById("scroll-left"),
+              document.getElementById("scroll-right")
+            );
+          }
+          if (productsContainer) {
+            updateScrollButtons(
+              productsContainer,
+              document.getElementById("products-scroll-left"),
+              document.getElementById("products-scroll-right")
+            );
+          }
+        }, 100);
+      }
+
+      function createProductElement(product) {
+        const div = document.createElement("div");
+        div.className = "product-card";
+        div.setAttribute("data-category", product.category);
+
+        div.innerHTML = `
+                    <div class="h-64 overflow-hidden">
+                        <img src="${product.image}" alt="${
+          product.name
+        }" class="w-full h-full object-cover hover:scale-105 transition-transform duration-300">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">${
+                          product.name
+                        }</h3>
+                        <p class="text-gray-600 mb-4 line-clamp-2">${
+                          product.description
+                        }</p>
+                        <div class="flex items-center justify-between">
+                            <span class="text-2xl font-bold text-green-600">₦${product.price.toLocaleString()}</span>
+                            <button onclick="addToCart(${
+                              product.id
+                            })" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors font-medium">
+                                Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                `;
+
+        return div;
+      }
+
+      // Testimonials Display Functions
+      function loadTestimonials() {
+        const videoContainer = document.getElementById(
+          "video-testimonials-container"
+        );
+        const writtenContainer = document.getElementById(
+          "written-testimonials-container"
+        );
+
+        videoContainer.innerHTML = "";
+        writtenContainer.innerHTML = "";
+
+        state.testimonials.forEach((testimonial) => {
+          if (testimonial.type === "video") {
+            const videoElement = createVideoTestimonialElement(testimonial);
+            videoContainer.appendChild(videoElement);
+          } else {
+            const writtenElement = createWrittenTestimonialElement(testimonial);
+            writtenContainer.appendChild(writtenElement);
+          }
+        });
+      }
+
+      function createVideoTestimonialElement(testimonial) {
+        const div = document.createElement("div");
+        div.className = "testimonial-card";
+
+        div.innerHTML = `
+              <div class="video-container mb-4">
+                <iframe src="${
+                  testimonial.video
+                }" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+              </div>
+              <div class="flex items-center mb-4">
+                ${
+                  testimonial.photo
+                    ? `<img src="${testimonial.photo}" alt="${testimonial.name}" class="w-12 h-12 object-cover rounded-full mr-3">`
+                    : `<div class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center mr-3"><i class="fas fa-user text-gray-500"></i></div>`
+                }
+                <div>
+                  <h4 class="font-semibold text-gray-900">${
+                    testimonial.name
+                  }</h4>
+                </div>
+              </div>
+              <p class="text-gray-600">${testimonial.text}</p>
+            `;
+
+        return div;
+      }
+
+      function createWrittenTestimonialElement(testimonial) {
+        const div = document.createElement("div");
+        div.className = "testimonial-card";
+
+        div.innerHTML = `
+              <div class="flex items-center mb-4">
+                ${
+                  testimonial.photo
+                    ? `<img src="${testimonial.photo}" alt="${testimonial.name}" class="w-12 h-12 object-cover rounded-full mr-3">`
+                    : `<div class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center mr-3"><i class="fas fa-user text-gray-500"></i></div>`
+                }
+                <div>
+                  <h4 class="font-semibold text-gray-900">${
+                    testimonial.name
+                  }</h4>
+                  <div class="flex text-yellow-400">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                  </div>
+                </div>
+              </div>
+              <p class="text-gray-600">${testimonial.text}</p>
+            `;
+
+        return div;
+      }
+
+      // Cart Functions
+      function addToCart(productId) {
+        const product = state.products.find((p) => p.id === productId);
+        if (product) {
+          const existingItem = state.cart.find((item) => item.id === productId);
+
+          if (existingItem) {
+            existingItem.quantity += 1;
+          } else {
+            state.cart.push({
+              ...product,
+              quantity: 1,
+            });
+          }
+
+          updateCartDisplay();
+          saveCartToStorage();
+          showNotification(`${product.name} added to cart!`);
+        }
+      }
+
+      function removeFromCart(productId) {
+        state.cart = state.cart.filter((item) => item.id !== productId);
+        updateCartDisplay();
+        updateCartSidebar();
+        saveCartToStorage();
+      }
+
+      function updateCartDisplay() {
+        const cartCountBadge = document.getElementById("cart-count-badge");
+        const totalItems = state.cart.reduce(
+          (total, item) => total + item.quantity,
+          0
+        );
+
+        if (totalItems > 0) {
+          cartCountBadge.textContent = totalItems;
+          cartCountBadge.classList.remove("hidden");
+        } else {
+          cartCountBadge.classList.add("hidden");
+        }
+      }
+
+      function loadCartFromStorage() {
+        const savedCart = localStorage.getItem("silverdream_cart");
+        if (savedCart) {
+          state.cart = JSON.parse(savedCart);
+        }
+      }
+
+      function saveCartToStorage() {
+        localStorage.setItem("silverdream_cart", JSON.stringify(state.cart));
+      }
+
+      // Cart Sidebar Functions
+      function toggleCart() {
+        state.cartOpen = !state.cartOpen;
+        const sidebar = document.getElementById("cart-sidebar");
+        const overlay = document.getElementById("cart-overlay");
+
+        if (state.cartOpen) {
+          sidebar.classList.remove("translate-x-full");
+          overlay.classList.remove("hidden");
+          updateCartSidebar();
+        } else {
+          sidebar.classList.add("translate-x-full");
+          overlay.classList.add("hidden");
+        }
+      }
+
+      function updateCartSidebar() {
+        const cartContent = document.getElementById("cart-content");
+        const cartTotal = document.getElementById("cart-total");
+        const cartItemCount = document.getElementById("cart-item-count");
+
+        if (state.cart.length === 0) {
+          cartContent.innerHTML = `
+                            <div class="flex flex-col items-center justify-center h-full text-gray-500">
+                                <i class="fas fa-shopping-bag text-6xl mb-4"></i>
+                                <p class="text-lg mb-2">Your shopping bag is empty</p>
+                                <p class="text-sm text-center">Add some products to get started!</p>
+                            </div>
+                        `;
+          cartTotal.textContent = "₦0";
+          cartItemCount.textContent = "0";
+          return;
+        }
+
+        let total = 0;
+        let itemCount = 0;
+        cartContent.innerHTML = "";
+
+        state.cart.forEach((item) => {
+          total += item.price * item.quantity;
+          itemCount += item.quantity;
+          const cartItem = document.createElement("div");
+          cartItem.className =
+            "flex items-center justify-between py-4 border-b border-gray-200";
+          cartItem.innerHTML = `
+                            <div class="flex items-center">
+                                <img src="${item.image}" alt="${
+            item.name
+          }" class="w-16 h-16 object-cover rounded-lg mr-4">
+                                <div>
+                                    <h4 class="font-semibold text-gray-900">${
+                                      item.name
+                                    }</h4>
+                                    <p class="text-gray-600">₦${item.price.toLocaleString()}</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="flex items-center border border-gray-300 rounded-md mr-4">
+                                    <button onclick="decreaseQuantity(${
+                                      item.id
+                                    })" class="px-2 py-1 text-gray-600 hover:bg-gray-100">
+                                        <i class="fas fa-minus text-xs"></i>
+                                    </button>
+                                    <span class="px-3 py-1 text-gray-900">${
+                                      item.quantity
+                                    }</span>
+                                    <button onclick="increaseQuantity(${
+                                      item.id
+                                    })" class="px-2 py-1 text-gray-600 hover:bg-gray-100">
+                                        <i class="fas fa-plus text-xs"></i>
+                                    </button>
+                                </div>
+                                <span class="text-lg font-semibold text-gray-900 mr-4">₦${(
+                                  item.price * item.quantity
+                                ).toLocaleString()}</span>
+                                <button onclick="removeFromCart(${
+                                  item.id
+                                })" class="text-red-500 hover:text-red-700">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        `;
+          cartContent.appendChild(cartItem);
+        });
+
+        cartTotal.textContent = `₦${total.toLocaleString()}`;
+        cartItemCount.textContent = itemCount;
+      }
+
+      function increaseQuantity(productId) {
+        const item = state.cart.find((item) => item.id === productId);
+        if (item) {
+          item.quantity += 1;
+          updateCartDisplay();
+          updateCartSidebar();
+          saveCartToStorage();
+        }
+      }
+
+      function decreaseQuantity(productId) {
+        const item = state.cart.find((item) => item.id === productId);
+        if (item && item.quantity > 1) {
+          item.quantity -= 1;
+          updateCartDisplay();
+          updateCartSidebar();
+          saveCartToStorage();
+        } else if (item && item.quantity === 1) {
+          removeFromCart(productId);
+        }
+      }
+
+      // Cart Checkout Functions
+      function proceedToCheckout() {
+        if (state.cart.length === 0) {
+          alert("Your cart is empty! Please add some products first.");
+          return;
+        }
+
+        // Close cart sidebar
+        toggleCart();
+
+        // Show contact section with checkout data
+        showSection("contact");
+
+        // Update checkout summary with cart items
+        updateCheckoutSummary();
+      }
+
+      function updateCheckoutSummary() {
+        const checkoutProducts = document.getElementById("checkout-products");
+        const checkoutTotal = document.getElementById("checkout-total");
+
+        let total = 0;
+        checkoutProducts.innerHTML = "";
+
+        if (state.cart.length === 0) {
+          checkoutProducts.innerHTML =
+            '<p class="text-gray-500 text-center py-4">No items in cart</p>';
+          checkoutTotal.textContent = "₦0";
+          return;
+        }
+
+        state.cart.forEach((item) => {
+          const itemTotal = item.price * item.quantity;
+          total += itemTotal;
+
+          const productElement = document.createElement("div");
+          productElement.className =
+            "flex justify-between items-center py-2 border-b border-green-100 last:border-b-0";
+          productElement.innerHTML = `
+                            <div class="flex-1">
+                                <div class="font-medium text-gray-900">${
+                                  item.name
+                                }</div>
+                                <div class="text-sm text-gray-500">Qty: ${
+                                  item.quantity
+                                } × ₦${item.price.toLocaleString()}</div>
+                            </div>
+                            <div class="font-semibold text-gray-900">₦${itemTotal.toLocaleString()}</div>
+                        `;
+          checkoutProducts.appendChild(productElement);
+        });
+
+        checkoutTotal.textContent = `₦${total.toLocaleString()}`;
+      }
+
+      function submitCheckoutForm() {
+        const name = document.getElementById("customer-name").value;
+        const phone = document.getElementById("customer-phone").value;
+        const email = document.getElementById("customer-email").value;
+        const stateResidence = document.getElementById("customer-state").value;
+        const address = document.getElementById("customer-address").value;
+        const referrer = document.getElementById("referrer").value;
+
+        // Validate required fields
+        if (!name || !phone || !stateResidence || !address) {
+          alert("Please fill in all required fields marked with *");
+          return;
+        }
+
+        if (state.cart.length === 0) {
+          alert("Your cart is empty! Please add products before checking out.");
+          return;
+        }
+
+        // Build products list from cart
+        let productsList = "";
+        let totalAmount = 0;
+
+        state.cart.forEach((item) => {
+          const itemTotal = item.price * item.quantity;
+          totalAmount += itemTotal;
+          productsList += `🛍️ ${item.name}
+       Quantity: ${item.quantity}
+       Price: ₦${item.price.toLocaleString()} each
+       Subtotal: ₦${itemTotal.toLocaleString()}\n\n`;
+        });
+
+        // Create WhatsApp message
+        const message = `🛒 *NEW ORDER - SILVERDREAM* 🛒
+
+    *CUSTOMER INFORMATION*
+    👤 Full Name: ${name}
+    📞 Phone Number: ${phone}
+    📧 Email: ${email || "Not provided"}
+    📍 State: ${stateResidence}
+    🏠 Delivery Address: ${address}
+    👥 Referred by: ${referrer || "Not specified"}
+
+    *ORDER SUMMARY*
+    ${productsList}
+    💰 *TOTAL AMOUNT: ₦${totalAmount.toLocaleString()}*
+
+    *PAYMENT PLAN*
+    I want to proceed with the ₦1,000 daily payment plan for my order.
+
+    Please confirm my order availability and provide payment details. Thank you!`;
+
+        const whatsappUrl = `https://wa.me/2348123456789?text=${encodeURIComponent(
+          message
+        )}`;
+
+        // Open WhatsApp in new tab
+        window.open(whatsappUrl, "_blank");
+
+        // Show success message
+        showNotification("Order submitted successfully! Opening WhatsApp...");
+
+        // If there's a referrer, add customer to affiliate's customer list
+        if (referrer) {
+          addCustomerToAffiliate(referrer, name, phone, totalAmount);
+        }
+
+        // Clear cart after submission
+        state.cart = [];
+        updateCartDisplay();
+        saveCartToStorage();
+        updateCheckoutSummary();
+      }
+
+      // Add customer to affiliate's customer list
+      function addCustomerToAffiliate(
+        affiliateName,
+        customerName,
+        customerPhone,
+        orderAmount
+      ) {
+        const affiliate = state.affiliates.find(
+          (a) => a.name === affiliateName
+        );
+        if (affiliate) {
+          // Calculate commission (10% of order amount)
+          const commission = Math.round(orderAmount * 0.1);
+
+          // Add customer to affiliate's customer list
+          affiliate.customers.push({
+            id: affiliate.customers.length + 1,
+            name: customerName,
+            phone: customerPhone,
+            status: "Active",
+            commission: commission,
+            date: new Date().toISOString().split("T")[0],
+          });
+
+          // Update affiliate stats
+          affiliate.referrals += 1;
+          affiliate.totalCommission += commission;
+          affiliate.activeReferrals += 1;
+
+          // Save to localStorage
+          saveAffiliatesToStorage();
+
+          // If the affiliate is currently logged in, update their dashboard
+          if (
+            state.currentAffiliate &&
+            state.currentAffiliate.id === affiliate.id
+          ) {
+            updateAffiliateDashboard();
+          }
+
+          showNotification(
+            `Customer added to ${affiliateName}'s referrals with ₦${commission} commission!`
+          );
+        }
+      }
+
+      // Mobile Menu Functions
+      function setupMobileMenu() {
+        document
+          .getElementById("mobileMenuBtn")
+          .addEventListener("click", function () {
+            document.getElementById("mobileMenu").classList.toggle("hidden");
+          });
+      }
+
+      // Search Functions
+      function setupSearch() {
+        const searchInput = document.getElementById("search-input");
+        const mobileSearchInput = document.getElementById(
+          "mobile-search-input"
+        );
+
+        if (searchInput) {
+          searchInput.addEventListener("input", function () {
+            handleSearch(this.value);
+          });
+        }
+
+        if (mobileSearchInput) {
+          mobileSearchInput.addEventListener("input", function () {
+            handleSearch(this.value);
+          });
+        }
+      }
+
+      function handleSearch(query) {
+        if (query.length < 2) {
+          document.getElementById("search-suggestions").classList.add("hidden");
+          document
+            .getElementById("mobile-search-suggestions")
+            .classList.add("hidden");
+          return;
+        }
+
+        const results = state.products.filter(
+          (product) =>
+            product.name.toLowerCase().includes(query.toLowerCase()) ||
+            product.description.toLowerCase().includes(query.toLowerCase())
+        );
+
+        displaySearchResults(results, query);
+      }
+
+      function displaySearchResults(results, query) {
+        const desktopSuggestions =
+          document.getElementById("search-suggestions");
+        const mobileSuggestions = document.getElementById(
+          "mobile-search-suggestions"
+        );
+
+        if (results.length === 0) {
+          desktopSuggestions.innerHTML = `<div class="p-3 text-gray-500">No products found for "${query}"</div>`;
+          mobileSuggestions.innerHTML = `<div class="p-3 text-gray-500">No products found for "${query}"</div>`;
+        } else {
+          desktopSuggestions.innerHTML = results
+            .map(
+              (product) => `
+                                <div class="p-3 border-b border-gray-100 hover:bg-gray-50 cursor-pointer" onclick="addToCart(${
+                                  product.id
+                                }); this.parentElement.classList.add('hidden');">
+                                    <div class="font-medium">${
+                                      product.name
+                                    }</div>
+                                    <div class="text-sm text-gray-500">₦${product.price.toLocaleString()}</div>
+                                </div>
+                            `
+            )
+            .join("");
+
+          mobileSuggestions.innerHTML = desktopSuggestions.innerHTML;
+        }
+
+        desktopSuggestions.classList.remove("hidden");
+        mobileSuggestions.classList.remove("hidden");
+      }
+
+      // Admin Functions
+      function setupAdminOptions() {
+        document
+          .getElementById("admin-options-btn")
+          .addEventListener("click", function () {
+            document
+              .getElementById("admin-options-menu")
+              .classList.toggle("hidden");
+          });
+
+        // Close admin menu when clicking outside
+        document.addEventListener("click", function (event) {
+          if (
+            !event.target.closest("#admin-options-btn") &&
+            !event.target.closest("#admin-options-menu")
+          ) {
+            document
+              .getElementById("admin-options-menu")
+              .classList.add("hidden");
+          }
+        });
+      }
+
+      function showAdminLogin() {
+        document.getElementById("admin-login-modal").classList.remove("hidden");
+        document.getElementById("admin-options-menu").classList.add("hidden");
+      }
+
+      function closeAdminLogin() {
+        document.getElementById("admin-login-modal").classList.add("hidden");
+      }
+
+      function submitAdminLogin() {
+        const username = document.getElementById("admin-username").value;
+        const password = document.getElementById("admin-password").value;
+
+        // Admin authentication with specified credentials
+        if (username === "admin" && password === "periscope19") {
+          state.isAdmin = true;
+          closeAdminLogin();
+          showAdminPanel();
+          showNotification("Admin login successful!");
+        } else {
+          alert(
+            "Invalid admin credentials! Please use username: admin, password: periscope19"
+          );
+        }
+      }
+
+      function showAdminPanel() {
+        document.getElementById("admin-panel-modal").classList.remove("hidden");
+        loadCurrentSliders();
+        loadCurrentTestimonials();
+        loadCurrentAffiliates();
+
+        // Render React components
+        renderReactComponents();
+      }
+
+      function closeAdminPanel() {
+        document.getElementById("admin-panel-modal").classList.add("hidden");
+      }
+
+      // Affiliate Functions
+      function showAffiliateLogin() {
+        showSection("affiliate");
+      }
+
+      // Admin Management Functions
+      function loadCurrentSliders() {
+        const container = document.getElementById("current-sliders");
+        container.innerHTML = "";
+
+        if (state.sliders.length === 0) {
+          container.innerHTML = `
+                            <div class="text-center py-4 text-gray-500">
+                                <i class="fas fa-images text-3xl mb-2"></i>
+                                <p>No sliders added yet</p>
+                            </div>
+                        `;
+          return;
+        }
+
+        state.sliders.forEach((slider) => {
+          const sliderElement = document.createElement("div");
+          sliderElement.className =
+            "bg-white p-3 rounded border border-gray-200";
+          sliderElement.innerHTML = `
+                            <div class="flex justify-between items-start">
+                                <div class="flex-1">
+                                    <div class="flex items-center mb-2">
+                                        <img src="${slider.image}" alt="${
+            slider.title
+          }" class="w-16 h-10 object-cover rounded mr-3">
+                                        <div>
+                                            <h5 class="font-semibold text-gray-900">${
+                                              slider.title
+                                            }</h5>
+                                            <p class="text-sm text-gray-500">${
+                                              slider.description
+                                            }</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center text-xs text-gray-500">
+                                        <span class="mr-3">Button: ${
+                                          slider.buttonText
+                                        }</span>
+                                        <span class="mr-3">Action: ${
+                                          slider.buttonAction
+                                        }</span>
+                                        <span class="px-2 py-1 rounded ${
+                                          slider.active
+                                            ? "bg-green-100 text-green-800"
+                                            : "bg-gray-100 text-gray-800"
+                                        }">
+                                            ${
+                                              slider.active
+                                                ? "Active"
+                                                : "Inactive"
+                                            }
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="flex space-x-2 ml-3">
+                                    <button onclick="editSlider(${
+                                      slider.id
+                                    })" class="text-blue-500 hover:text-blue-700 p-1">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button onclick="toggleSliderActive(${
+                                      slider.id
+                                    })" class="text-yellow-500 hover:text-yellow-700 p-1">
+                                        <i class="fas fa-eye${
+                                          slider.active ? "" : "-slash"
+                                        }"></i>
+                                    </button>
+                                    <button onclick="deleteSlider(${
+                                      slider.id
+                                    })" class="text-red-500 hover:text-red-700 p-1">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+          container.appendChild(sliderElement);
+        });
+      }
+
+      function loadCurrentTestimonials() {
+        const container = document.getElementById("current-testimonials");
+        container.innerHTML = "";
+
+        if (state.testimonials.length === 0) {
+          container.innerHTML = `
+                            <div class="text-center py-4 text-gray-500">
+                                <i class="fas fa-comments text-3xl mb-2"></i>
+                                <p>No testimonials added yet</p>
+                            </div>
+                        `;
+          return;
+        }
+
+        const writtenTestimonials = state.testimonials.filter(
+          (t) => t.type === "written"
+        );
+
+        if (writtenTestimonials.length === 0) {
+          container.innerHTML = `
+                            <div class="text-center py-4 text-gray-500">
+                                <i class="fas fa-comment text-3xl mb-2"></i>
+                                <p>No written testimonials added yet</p>
+                            </div>
+                        `;
+          return;
+        }
+
+        writtenTestimonials.forEach((testimonial) => {
+          const testimonialElement = document.createElement("div");
+          testimonialElement.className =
+            "bg-white p-3 rounded border border-gray-200";
+          testimonialElement.innerHTML = `
+                            <div class="flex justify-between items-start">
+                                <div class="flex-1">
+                                    <div class="flex items-center mb-2">
+                                        ${
+                                          testimonial.photo
+                                            ? `<img src="${testimonial.photo}" alt="${testimonial.name}" class="w-10 h-10 object-cover rounded-full mr-3">`
+                                            : `<div class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center mr-3"><i class="fas fa-user text-gray-500"></i></div>`
+                                        }
+                                        <div>
+                                            <h5 class="font-semibold text-gray-900">${
+                                              testimonial.name
+                                            }</h5>
+                                            <p class="text-sm text-gray-500 line-clamp-2">${
+                                              testimonial.text
+                                            }</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center text-xs text-gray-500">
+                                        <span class="px-2 py-1 rounded bg-green-100 text-green-800">
+                                            Written Testimonial
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="flex space-x-2 ml-3">
+                                    <button onclick="editTestimonial(${
+                                      testimonial.id
+                                    })" class="text-blue-500 hover:text-blue-700 p-1">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button onclick="deleteTestimonial(${
+                                      testimonial.id
+                                    })" class="text-red-500 hover:text-red-700 p-1">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+          container.appendChild(testimonialElement);
+        });
+      }
+
+      function loadCurrentAffiliates() {
+        const container = document.getElementById("current-affiliates");
+        container.innerHTML = "";
+
+        if (state.affiliates.length === 0) {
+          container.innerHTML = `
+                            <div class="text-center py-4 text-gray-500">
+                                <i class="fas fa-users text-3xl mb-2"></i>
+                                <p>No affiliates registered yet</p>
+                            </div>
+                        `;
+          return;
+        }
+
+        state.affiliates.forEach((affiliate) => {
+          const affiliateElement = document.createElement("div");
+          affiliateElement.className =
+            "bg-white p-3 rounded border border-gray-200";
+          affiliateElement.innerHTML = `
+                            <div class="flex justify-between items-start">
+                                <div class="flex-1">
+                                    <div class="mb-2">
+                                        <h5 class="font-semibold text-gray-900">${
+                                          affiliate.name
+                                        }</h5>
+                                        <p class="text-sm text-gray-500">${
+                                          affiliate.email
+                                        } | ${affiliate.phone}</p>
+                                    </div>
+                                    <div class="flex items-center text-xs text-gray-500">
+                                        <span class="mr-3">Referrals: ${
+                                          affiliate.referrals
+                                        }</span>
+                                        <span class="mr-3">Active: ${
+                                          affiliate.activeReferrals
+                                        }</span>
+                                        <span class="px-2 py-1 rounded bg-green-100 text-green-800">
+                                            ₦${affiliate.totalCommission.toLocaleString()}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="flex space-x-2 ml-3">
+                                    <button onclick="editAffiliate(${
+                                      affiliate.id
+                                    })" class="text-blue-500 hover:text-blue-700 p-1">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button onclick="deleteAffiliate(${
+                                      affiliate.id
+                                    })" class="text-red-500 hover:text-red-700 p-1">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+          container.appendChild(affiliateElement);
+        });
+      }
+
+      // Utility Functions
+      function showNotification(message) {
+        // Create a simple notification
+        const notification = document.createElement("div");
+        notification.className =
+          "fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 transform translate-y-0 transition-transform duration-300";
+        notification.textContent = message;
+        document.body.appendChild(notification);
+
+        // Remove after 3 seconds
+        setTimeout(() => {
+          notification.classList.add("translate-y-[-100px]");
+          setTimeout(() => {
+            document.body.removeChild(notification);
+          }, 300);
+        }, 3000);
+      }
+
+      function openWhatsApp() {
+        window.open("https://wa.me/2348123456789", "_blank");
+      }
+
+      function filterProducts(category) {
+        const products = document.querySelectorAll(".product-card");
+        const filterButtons = document.querySelectorAll(".category-filter");
+
+        // Update active button
+        filterButtons.forEach((button) => {
+          if (button.textContent.toLowerCase().includes(category)) {
+            button.classList.add("bg-green-500", "text-white");
+            button.classList.remove("bg-gray-200", "text-gray-700");
+          } else {
+            button.classList.remove("bg-green-500", "text-white");
+            button.classList.add("bg-gray-200", "text-gray-700");
+          }
+        });
+
+        // Filter products
+        products.forEach((product) => {
+          if (
+            category === "all" ||
+            product.getAttribute("data-category") === category
+          ) {
+            product.style.display = "block";
+          } else {
+            product.style.display = "none";
+          }
+        });
+      }
+
+      // Placeholder functions for admin features
+      function showAddSliderModal() {
+        alert("Add Slider modal would open here");
+      }
+
+      function showAddProductModal() {
+        alert("Add Product modal would open here");
+      }
+
+      function showProductManager() {
+        alert("Product Manager would open here");
+      }
+
+      function showAddTestimonialModal() {
+        alert("Add Testimonial modal would open here");
+      }
+
+      function showAddAffiliateModal() {
+        alert("Add Affiliate modal would open here");
+      }
+
+      function exportAffiliateData() {
+        alert("Affiliate data would be exported as CSV");
+      }
+
+      function editSlider(id) {
+        alert(`Edit slider ${id}`);
+      }
+
+      function toggleSliderActive(id) {
+        alert(`Toggle slider ${id} active status`);
+      }
+
+      function deleteSlider(id) {
+        if (confirm("Are you sure you want to delete this slider?")) {
+          alert(`Slider ${id} deleted`);
+        }
+      }
+
+      function editTestimonial(id) {
+        alert(`Edit testimonial ${id}`);
+      }
+
+      function deleteTestimonial(id) {
+        if (confirm("Are you sure you want to delete this testimonial?")) {
+          alert(`Testimonial ${id} deleted`);
+        }
+      }
+
+      function editAffiliate(id) {
+        alert(`Edit affiliate ${id}`);
+      }
+
+      function deleteAffiliate(id) {
+        if (confirm("Are you sure you want to delete this affiliate?")) {
+          alert(`Affiliate ${id} deleted`);
+        }
+      }
+
+      function previewLogo(input) {
+        // Implementation for logo preview
+        if (input.files && input.files[0]) {
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            document.getElementById("new-logo-preview").src = e.target.result;
+            document
+              .getElementById("logo-preview-container")
+              .classList.remove("hidden");
+          };
+          reader.readAsDataURL(input.files[0]);
+        }
+      }
+
+      function updateLogo() {
+        const newLogoPreview = document.getElementById("new-logo-preview");
+        if (newLogoPreview.src) {
+          document.getElementById("logo-preview").src = newLogoPreview.src;
+          document.getElementById("site-logo").src = newLogoPreview.src;
+          document
+            .getElementById("logo-preview-container")
+            .classList.add("hidden");
+          showNotification("Logo updated successfully!");
+        } else {
+          alert("Please select a logo to upload first");
+        }
+      }
+
+      // Render React Components
+      function renderReactComponents() {
+        const container = document.getElementById("react-components");
+
+        // Render Real-time Monitoring when admin panel is open
+        const adminPanel = document.getElementById("admin-panel-modal");
+        if (adminPanel && !adminPanel.classList.contains("hidden")) {
+          const monitoringContainer = document.getElementById(
+            "real-time-monitoring"
+          );
+          if (monitoringContainer) {
+            ReactDOM.render(
+              React.createElement(RealTimeMonitoring),
+              monitoringContainer
+            );
+          }
+
+          const videosContainer = document.getElementById("current-videos");
+          if (videosContainer) {
+            ReactDOM.render(
+              React.createElement(VideoManagement),
+              videosContainer
+            );
+          }
+        }
+      }
+    </script>
+  </body>
+</html>
